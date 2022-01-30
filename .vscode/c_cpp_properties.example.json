@@ -5,6 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/usr/include",
+                "/home/swan/Programming/Projects/cilent/src",
                 "/home/swan/Programming/Projects/stg-sprender/src",
                 "/home/swan/Programming/Libraries/Debug/FNA3D/include",
                 "/home/swan/Programming/Libraries/Debug/FNA3D/MojoShader",

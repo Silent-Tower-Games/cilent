@@ -1,8 +1,9 @@
 #include <stdio.h>
+#include <Cilent/Cilent.h>
 
 int main()
 {
-    printf("Hello, World!\n");
+    printf("%s\n", Cilent_HelloWorld());
     
     return 0;
 }
