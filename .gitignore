@@ -1,0 +1,10 @@
+# Anything in .vscode except the example files
+.vscode/*
+!.vscode/*.example.json
+# Binaries
+*.o
+*.dll
+*.so
+*.dylib
+*.exe
+main
