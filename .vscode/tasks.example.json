@@ -7,11 +7,30 @@
             "args": [],
             "options": {
                 "env": {
-                    "BUILD": "linux-gcc-64",
+                    "PLATFORM": "linux-gcc-64",
+                    "BUILD": "Debug",
                     "CFLAGS": "-g -pedantic",
                     "EXT": "so",
-                    "INCLUDE_PATHS": "-I/home/swan/Programming/Libraries/Debug/flecs-master/include -I/home/swan/Programming/Projects/cilent/src -I/home/swan/Programming/Libraries/Debug/FNA3D/include -I/home/swan/Programming/Libraries/Debug/FNA3D/MojoShader -I/home/swan/Programming/Libraries/Debug/lua-5.4.2/include -I/home/swan/Programming/Projects/stg-sprender/src",
-                    "LIBRARY_PATHS": "-L/home/swan/Programming/Libraries/Debug/flecs-master -L/home/swan/Programming/Projects/cilent -L/home/swan/Programming/Libraries/Debug/FNA3D -L/home/swan/Programming/Libraries/Debug/lua-5.4.2 -L/home/swan/Programming/Projects/stg-sprender"
+                    
+                    "SDL2": "`sdl2-config --libs`",
+                    
+                    "PATH_FLECS_INCLUDE": "-I/home/swan/Programming/Libraries/Debug/flecs-master/include",
+                    "PATH_FLECS_LIB": "-L/home/swan/Programming/Libraries/Debug/flecs-master/",
+                    
+                    "PATH_CILENT_INCLUDE": "-I/home/swan/Programming/Projects/cilent/src",
+                    "PATH_CILENT_LIB": "-L/home/swan/Programming/Projects/cilent",
+                    
+                    "PATH_SPRENDER_INCLUDE": "-I/home/swan/Programming/Projects/stg-sprender/src",
+                    "PATH_SPRENDER_LIB": "-L/home/swan/Programming/Projects/stg-sprender",
+                    
+                    "PATH_FNA3D_INCLUDE": "-I/home/swan/Programming/Libraries/Debug/FNA3D/include -I/home/swan/Programming/Libraries/Debug/FNA3D/MojoShader",
+                    "PATH_FNA3D_LIB": "-L/home/swan/Programming/Libraries/Debug/FNA3D",
+                    
+                    "PATH_LUA_INCLUDE": "-I/home/swan/Programming/Libraries/Debug/lua-5.4.2/include",
+                    "PATH_LUA_LIB": "-L/home/swan/Programming/Libraries/Debug/lua-5.4.2",
+                    
+                    "PATH_SDL2_INCLUDE": "`sdl2-config --cflags`",
+                    "PATH_SDL2_LIB": "`sdl2-config --libs`"
                 }
             },
             "group": {

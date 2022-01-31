@@ -12,7 +12,7 @@ Cilent* Cilent_Create()
         "Test",
         (Sprender_Int2D){ 640, 360 },
         (Sprender_Int2D){ 320, 180 },
-        "assets/SpriteEffect.fbx",
+        "data/SpriteEffect.fxb",
         NULL,
         10000,
         0,
