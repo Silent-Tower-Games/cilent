@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <Cilent/Cilent.h>
+#include <Cilent/Mod.h>
 
 int main(int argc, char** argv)
 {
@@ -15,6 +16,10 @@ int main(int argc, char** argv)
     int listLength;
     const char* directory = "data";
     listLength = scandir(directory, &list, NULL, alphasort);
+    
+    Cilent_Mod mods[listLength];
+    int modsCount = 0;
+    
     const int pathLength = 1024;
     char* path = malloc(sizeof(char) * pathLength);
     while(listLength--)
@@ -37,12 +42,22 @@ int main(int argc, char** argv)
         struct stat stats;
         stat(path, &stats);
         
-        printf("`%s`: %s\n", path, S_ISDIR(stats.st_mode) ? "Directory" : "File");
+        if(S_ISDIR(stats.st_mode))
+        {
+            mods[modsCount] = Cilent_Mod_CreateFromPath(list[listLength]->d_name, path);
+            modsCount++;
+        }
         
         free(list[listLength]);
     }
     free(path);
     free(list);
+    
+    // Unload mods
+    for(int i = 0; i < modsCount; i++)
+    {
+        Cilent_Mod_Destroy(&mods[i]);
+    }
     
     return 0;
     

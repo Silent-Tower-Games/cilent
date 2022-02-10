@@ -11,8 +11,12 @@ build:
 
 lib:
 	${CC} ${CFLAGS} -c src/Cilent/Cilent.c -o src/Cilent/Cilent.o ${INCLUDE_PATHS} -fPIC
+	${CC} ${CFLAGS} -c src/Cilent/Mod.c -o src/Cilent/Mod.o ${INCLUDE_PATHS} -fPIC
+	${CC} ${CFLAGS} -c src/vendor/ini-master/src/ini.c -o src/vendor/ini-master/src/ini.o -fPIC
 	${CC} ${CFLAGS} \
 		src/Cilent/Cilent.o \
+		src/Cilent/Mod.o \
+		src/vendor/ini-master/src/ini.o \
 		-shared -o libcilent.${EXT} \
 	${LIBRARY_PATHS}
 	cp libcilent.${EXT} bin/${PLATFORM}/${BUILD}/libs/libcilent.${EXT}
