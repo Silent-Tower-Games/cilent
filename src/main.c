@@ -1,8 +1,4 @@
 #define _DEFAULT_SOURCE
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <Cilent/Cilent.h>
@@ -12,46 +8,24 @@ int main(int argc, char** argv)
 {
     printf("%s\n", Cilent_HelloWorld());
     
-    struct dirent** list;
-    int listLength;
-    const char* directory = "data";
-    listLength = scandir(directory, &list, NULL, alphasort);
+    int modsCount;
+    Cilent_Mod* mods = Cilent_Mod_FindAll(&modsCount);
     
-    Cilent_Mod mods[listLength];
-    int modsCount = 0;
-    
-    const int pathLength = 1024;
-    char* path = malloc(sizeof(char) * pathLength);
-    while(listLength--)
+    // Cycle through mods
+    for(int i = 0; i < modsCount; i++)
     {
-        if(
-            strcmp(list[listLength]->d_name, ".") == 0
-            ||
-            strcmp(list[listLength]->d_name, "..") == 0
-        )
+        printf(
+            "\"%s\" by %s\n",
+            ini_get(mods[i].ini, "project", "title"),
+            ini_get(mods[i].ini, "project", "developer")
+        );
+        
+        int testVersionNumber;
+        if(ini_sget(mods[i].ini, "project", "version", "%d", &testVersionNumber))
         {
-            continue;
+            printf("Version: %d\n",testVersionNumber);
         }
-        
-        if(snprintf(path, pathLength, "%s/%s", directory, list[listLength]->d_name) >= pathLength)
-        {
-            printf("Path name too long (limit: %d characters)! `%s/%s`\n", pathLength - 1, directory, list[listLength]->d_name);
-            continue;
-        }
-        
-        struct stat stats;
-        stat(path, &stats);
-        
-        if(S_ISDIR(stats.st_mode))
-        {
-            mods[modsCount] = Cilent_Mod_CreateFromPath(list[listLength]->d_name, path);
-            modsCount++;
-        }
-        
-        free(list[listLength]);
     }
-    free(path);
-    free(list);
     
     // Unload mods
     for(int i = 0; i < modsCount; i++)
