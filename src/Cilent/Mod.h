@@ -8,9 +8,10 @@ typedef struct Cilent_Mod
     ini_t* ini;
     char* name;
     char active;
+    char game;
 } Cilent_Mod;
 
-Cilent_Mod* Cilent_Mod_FindAll(int* pModsCount);
+void Cilent_Mod_FindAll(Cilent_Mod** modsGame, int* pModsGameCount, Cilent_Mod** modsMod, int* pModsModCount);
 
 Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path);
 

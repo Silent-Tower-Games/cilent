@@ -14,7 +14,6 @@ Cilent* Cilent_Create()
         (Sprender_Int2D){ 320, 180 },
         "data/SpriteEffect.fxb",
         NULL,
-        10000,
         0,
         0
     );

@@ -9,20 +9,40 @@
 #include <SDL2/SDL.h>
 #include "Mod.h"
 
-Cilent_Mod* Cilent_Mod_FindAll(int* pModsCount)
+void Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod** pModsAddon, int* pModsAddonCount)
 {
+    // Assert these pointers actually go somewhere
+    assert(pModsGame != NULL);
+    assert(pModsAddon != NULL);
+    // Assert that the pointers' values are null pointers
+    // This is to assure that we aren't throwing away any memory by setting them
+    assert(*pModsGame == NULL);
+    assert(*pModsAddon == NULL);
+    
+    // Set up all of the directory searching stuff
+    // This also gets us the highest possible mod count in listLength
+    // It's probably always gonna be 2 more than the highest possible, actually
     struct dirent** list;
     int listLength;
     const char* directory = "data";
     listLength = scandir(directory, &list, NULL, alphasort);
     
-    Cilent_Mod* mods = malloc(sizeof(Cilent_Mod) * listLength);
-    int modsCount = 0;
+    // Initialize both of these at the highest possible length
+    // We'll realloc later to free any unused memory
+    // At least one of these must be smaller than the highest possible length
+    Cilent_Mod* modsGame = malloc(sizeof(Cilent_Mod) * listLength);
+    Cilent_Mod* modsMod = malloc(sizeof(Cilent_Mod) * listLength);
     
+    // Reset these to 0 before we start counting up
+    *pModsGameCount = 0;
+    *pModsAddonCount = 0;
+    
+    // The relative path to a mod should probably not be longer than this
     const int pathLength = 1024;
     char* path = malloc(sizeof(char) * pathLength);
     while(listLength--)
     {
+        // Skip . and .. as they are not real directories
         if(
             strcmp(list[listLength]->d_name, ".") == 0
             ||
@@ -43,8 +63,19 @@ Cilent_Mod* Cilent_Mod_FindAll(int* pModsCount)
         
         if(S_ISDIR(stats.st_mode))
         {
-            mods[modsCount] = Cilent_Mod_CreateFromPath(list[listLength]->d_name, path);
-            modsCount++;
+            Cilent_Mod mod = Cilent_Mod_CreateFromPath(list[listLength]->d_name, path);
+            printf("Adding a mod: %s\n", mod.name);
+            
+            if(mod.game)
+            {
+                modsGame[*pModsGameCount] = mod;
+                (*pModsGameCount)++;
+            }
+            else
+            {
+                modsMod[*pModsAddonCount] = mod;
+                (*pModsAddonCount)++;
+            }
         }
         
         free(list[listLength]);
@@ -52,11 +83,8 @@ Cilent_Mod* Cilent_Mod_FindAll(int* pModsCount)
     free(path);
     free(list);
     
-    *pModsCount = modsCount;
-    
-    mods = realloc(mods, sizeof(Cilent_Mod) * modsCount);
-    
-    return mods;
+    *pModsGame = realloc(modsGame, sizeof(Cilent_Mod) * *pModsGameCount);
+    *pModsAddon = realloc(modsMod, sizeof(Cilent_Mod) * *pModsAddonCount);
 }
 
 Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
@@ -66,8 +94,7 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     Cilent_Mod mod;
     mod.name = name;
     mod.active = 0;
-    
-    printf("Mod: %s\n", mod.name);
+    mod.game = 0;
     
     // Build config.ini file path
     char* iniFilename = "config.ini";
@@ -78,6 +105,9 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     
     // Load config.ini
     mod.ini = ini_load(mod.iniFilename);
+    
+    // Set whether or not this is a full game mod
+    ini_sget(mod.ini, "project", "game", "%c", &mod.game);
     
     return mod;
 }
