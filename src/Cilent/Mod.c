@@ -9,7 +9,7 @@
 #include <SDL2/SDL.h>
 #include "Mod.h"
 
-void Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod** pModsAddon, int* pModsAddonCount)
+ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod** pModsAddon, int* pModsAddonCount)
 {
     // Assert these pointers actually go somewhere
     assert(pModsGame != NULL);
@@ -18,6 +18,8 @@ void Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod*
     // This is to assure that we aren't throwing away any memory by setting them
     assert(*pModsGame == NULL);
     assert(*pModsAddon == NULL);
+    
+    ecs_map_t* map = NULL;
     
     // Set up all of the directory searching stuff
     // This also gets us the highest possible mod count in listLength
@@ -31,7 +33,7 @@ void Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod*
     // We'll realloc later to free any unused memory
     // At least one of these must be smaller than the highest possible length
     Cilent_Mod* modsGame = malloc(sizeof(Cilent_Mod) * listLength);
-    Cilent_Mod* modsMod = malloc(sizeof(Cilent_Mod) * listLength);
+    Cilent_Mod* modsAddon = malloc(sizeof(Cilent_Mod) * listLength);
     
     // Reset these to 0 before we start counting up
     *pModsGameCount = 0;
@@ -64,7 +66,6 @@ void Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod*
         if(S_ISDIR(stats.st_mode))
         {
             Cilent_Mod mod = Cilent_Mod_CreateFromPath(list[listLength]->d_name, path);
-            printf("Adding a mod: %s\n", mod.name);
             
             if(mod.game)
             {
@@ -73,7 +74,7 @@ void Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod*
             }
             else
             {
-                modsMod[*pModsAddonCount] = mod;
+                modsAddon[*pModsAddonCount] = mod;
                 (*pModsAddonCount)++;
             }
         }
@@ -84,7 +85,11 @@ void Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod*
     free(list);
     
     *pModsGame = realloc(modsGame, sizeof(Cilent_Mod) * *pModsGameCount);
-    *pModsAddon = realloc(modsMod, sizeof(Cilent_Mod) * *pModsAddonCount);
+    *pModsAddon = realloc(modsAddon, sizeof(Cilent_Mod) * *pModsAddonCount);
+    
+    map = ecs_map_new(Cilent_Mod*, (*pModsGameCount) + (*pModsAddonCount));
+    
+    return map;
 }
 
 Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
