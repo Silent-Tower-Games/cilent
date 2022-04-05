@@ -7,7 +7,11 @@
 #include <string.h>
 #include <unistd.h>
 #include <SDL2/SDL.h>
+#include <flecs.h>
 #include "Mod.h"
+#include "../Flecs/Maps.h"
+
+void Cilent_Mod_Init();
 
 ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod** pModsAddon, int* pModsAddonCount)
 {
@@ -19,8 +23,6 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
     assert(*pModsGame == NULL);
     assert(*pModsAddon == NULL);
     
-    ecs_map_t* map = NULL;
-    
     // Set up all of the directory searching stuff
     // This also gets us the highest possible mod count in listLength
     // It's probably always gonna be 2 more than the highest possible, actually
@@ -28,6 +30,10 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
     int listLength;
     const char* directory = "data";
     listLength = scandir(directory, &list, NULL, alphasort);
+    
+    // Set up the map that we will return
+    // Give it the largest possible size, and we'll resize it later
+    ecs_map_t* map = ecs_map_new(Cilent_Mod, listLength);
     
     // Initialize both of these at the highest possible length
     // We'll realloc later to free any unused memory
@@ -66,17 +72,22 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
         if(S_ISDIR(stats.st_mode))
         {
             Cilent_Mod mod = Cilent_Mod_CreateFromPath(list[listLength]->d_name, path);
+            Cilent_Mod* pMod = NULL;
             
             if(mod.game)
             {
-                modsGame[*pModsGameCount] = mod;
+                pMod = &modsGame[*pModsGameCount];
                 (*pModsGameCount)++;
             }
             else
             {
-                modsAddon[*pModsAddonCount] = mod;
+                pMod = &modsAddon[*pModsAddonCount];
                 (*pModsAddonCount)++;
             }
+            
+            *pMod = mod;
+            
+            map_set(map, mod.name, pMod);
         }
         
         free(list[listLength]);
@@ -84,10 +95,11 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
     free(path);
     free(list);
     
-    *pModsGame = realloc(modsGame, sizeof(Cilent_Mod) * *pModsGameCount);
-    *pModsAddon = realloc(modsAddon, sizeof(Cilent_Mod) * *pModsAddonCount);
+    *pModsGame = realloc(modsGame, sizeof(Cilent_Mod) * (*pModsGameCount));
+    *pModsAddon = realloc(modsAddon, sizeof(Cilent_Mod) * (*pModsAddonCount));
     
-    map = ecs_map_new(Cilent_Mod*, (*pModsGameCount) + (*pModsAddonCount));
+    // TODO: Resize mods map down to actual size
+    //map = ecs_map_new(Cilent_Mod*, (*pModsGameCount) + (*pModsAddonCount));
     
     return map;
 }
@@ -97,7 +109,8 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     assert(path != NULL);
     
     Cilent_Mod mod;
-    mod.name = name;
+    mod.name = malloc(sizeof(char) * strlen(name));
+    strcpy(mod.name, name);
     mod.active = 0;
     mod.game = 0;
     
@@ -121,6 +134,7 @@ void Cilent_Mod_Destroy(Cilent_Mod* mod)
 {
     assert(mod != NULL);
     
+    free(mod->name);
     free(mod->iniFilename);
     ini_free(mod->ini);
 }

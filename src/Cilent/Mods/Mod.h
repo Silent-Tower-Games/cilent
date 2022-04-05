@@ -1,7 +1,7 @@
 #pragma once
 
 #include <flecs.h>
-#include "../vendor/ini-master/src/ini.h"
+#include "../../vendor/ini-master/src/ini.h"
 
 typedef struct Cilent_Mod
 {
