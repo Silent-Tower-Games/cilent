@@ -1,10 +1,9 @@
 #pragma once
 
-#include <flecs.h>
 #include "../../vendor/ini-master/src/ini.h"
+#include <flecs.h>
 
-typedef struct Cilent_Mod
-{
+typedef struct Cilent_Mod {
     char* iniFilename;
     ini_t* ini;
     char* name;

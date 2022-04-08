@@ -1,10 +1,9 @@
 #pragma once
 
-#include <flecs.h>
 #include <Sprender/Sprender.h>
+#include <flecs.h>
 
-typedef struct Cilent
-{
+typedef struct Cilent {
     ecs_world_t* world;
     Sprender* sprender;
 } Cilent;
