@@ -22,27 +22,22 @@ int main(int argc, char** argv)
         .org = "Silent Tower Games",
         .app = "My Game",
         .language = "en",
+        .mod = "my-custom-mod",
     });
-    printf(Cilent_Config_FileData(&config));
-    Cilent_Config_Save(&config);
     
-    SDL_Quit();
-    
-    return 0;
-    
-    /*
-    const char* modName = "my-custom-mod";
-    
-    Cilent_ModState modState = Cilent_ModState_Load(modName);
+    Cilent_ModState modState = Cilent_ModState_Load(config.mod);
     
     assert(modState.activeGame != NULL);
     
     printf("Now playing `%s`\n", modState.activeGame->name);
     
-    // Unload mods
+    // End game
     Cilent_ModState_Destroy(modState);
+    Cilent_Config_Save(&config);
     
     printf("Goodbye, World!\n");
+    
+    SDL_Quit();
     
     return 0;
     //*/

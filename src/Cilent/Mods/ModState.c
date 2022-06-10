@@ -1,8 +1,11 @@
+#include <assert.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "ModState.h"
 #include "../Flecs/Maps.h"
 
-Cilent_ModState Cilent_ModState_Load(const char* activeGame)
+Cilent_ModState Cilent_ModState_Load(char* activeGame)
 {
     Cilent_ModState modState;
     memset(&modState, 0, sizeof(Cilent_ModState));
@@ -20,11 +23,20 @@ Cilent_ModState Cilent_ModState_Load(const char* activeGame)
         // TODO: Log that the selected game could not be loaded
         
         modState.activeGame = map_get(modState.map, "base", Cilent_Mod);
+        
+        assert(modState.activeGame != NULL);
     }
     
     // TODO: Active addons
-    modState.activeAddons = NULL;
+    modState.activeAddons = malloc(sizeof(Cilent_Mod*) * modState.addonsCount);
     modState.activeAddonsCount = 0;
+    
+    snprintf(
+        activeGame,
+        127,
+        "%s",
+        modState.activeGame->name
+    );
     
     return modState;
 }

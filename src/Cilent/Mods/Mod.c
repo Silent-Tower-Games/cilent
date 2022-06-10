@@ -101,8 +101,7 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     assert(path != NULL);
     
     Cilent_Mod mod;
-    mod.name = malloc(sizeof(char) * strlen(name));
-    strcpy(mod.name, name);
+    snprintf(mod.name, 127, "%s", name);
     mod.active = 0;
     mod.game = 0;
     
@@ -126,7 +125,6 @@ void Cilent_Mod_Destroy(Cilent_Mod* mod)
 {
     assert(mod != NULL);
     
-    free(mod->name);
     free(mod->iniFilename);
     ini_free(mod->ini);
 }

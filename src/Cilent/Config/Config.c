@@ -63,7 +63,6 @@ static char* Cilent_Config_GetFilename(Cilent_Config* config)
             SDL_GetPrefPath(
                 config->org,
                 config->app
-                
             )
         );
     }
@@ -80,8 +79,8 @@ static char Cilent_Config_Load(Cilent_Config* config)
     }
     
     CILENT_CONFIG_LOAD_STRING(language);
-    
     CILENT_CONFIG_LOAD_INT(debug);
+    CILENT_CONFIG_LOAD_STRING(mod);
     
     ini_free(configIni);
     
@@ -127,13 +126,15 @@ char* Cilent_Config_FileData(Cilent_Config* config)
     char* fmt = (
         "language=%s\n"
         "debug=%d\n"
+        "mod=%s\n"
     );
     char* data = malloc(
         sizeof(char) * (
             (strlen(fmt) + 1) // format string
-            - 4 // format standins
+            - 6 // format standins
             + 5 // language
             + 1 // debug
+            + strlen(config->mod) // mod
             + 1 // null terminator
         )
     );
@@ -142,8 +143,7 @@ char* Cilent_Config_FileData(Cilent_Config* config)
         fmt,
         config->language,
         config->debug % 2, // only 0 or 1
-        config->org,
-        config->app
+        config->mod
     );
     
     return data;

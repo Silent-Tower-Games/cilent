@@ -6,7 +6,7 @@
 typedef struct Cilent_Mod {
     char* iniFilename;
     ini_t* ini;
-    char* name;
+    char name[128];
     char active;
     char game;
 } Cilent_Mod;
