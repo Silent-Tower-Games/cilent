@@ -121,6 +121,14 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     return mod;
 }
 
+void Cilent_Mod_Step(Cilent_Mod* mod)
+{
+    // I don't know what this is going to look like yet
+
+    // A mod should probably not execute unless it has a language file in the
+    // currently-selected language...
+}
+
 void Cilent_Mod_Destroy(Cilent_Mod* mod)
 {
     assert(mod != NULL);
