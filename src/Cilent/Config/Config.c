@@ -70,10 +70,8 @@ static char* Cilent_Config_GetFilename(Cilent_Config* config)
     return Cilent_Config_Filename;
 }
 
-static char Cilent_Config_Load(Cilent_Config* config)
+static char Cilent_Config_Load(Cilent_Config* config, ini_t* configIni)
 {
-    ini_t* configIni = ini_load(Cilent_Config_GetFilename(config));
-    
     if (configIni == NULL) {
         return 0;
     }
@@ -81,8 +79,6 @@ static char Cilent_Config_Load(Cilent_Config* config)
     CILENT_CONFIG_LOAD_STRING(language);
     CILENT_CONFIG_LOAD_INT(debug);
     CILENT_CONFIG_LOAD_STRING(mod);
-    
-    ini_free(configIni);
     
     return 1;
 }
@@ -93,7 +89,13 @@ Cilent_Config Cilent_Config_Create(Cilent_Config configDefault)
     
     assert(Cilent_Config_LanguageIsValid(configDefault.language));
     
-    Cilent_Config_Load(&config);
+    ini_t* configIni = ini_load(Cilent_Config_GetFilename(&config));
+    
+    Cilent_Config_Load(&config, configIni);
+    
+    config.modState = Cilent_ModState_Load(config.mod, configIni);
+    
+    ini_free(configIni);
     
     return config;
 }
@@ -147,4 +149,9 @@ char* Cilent_Config_FileData(Cilent_Config* config)
     );
     
     return data;
+}
+
+void Cilent_Config_Destroy(Cilent_Config* config)
+{
+    Cilent_ModState_Destroy(config->modState);
 }

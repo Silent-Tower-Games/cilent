@@ -25,15 +25,13 @@ int main(int argc, char** argv)
         .mod = "my-custom-mod",
     });
     
-    Cilent_ModState modState = Cilent_ModState_Load(config.mod);
+    assert(config.modState.activeGame != NULL);
     
-    assert(modState.activeGame != NULL);
-    
-    printf("Now playing `%s`\n", modState.activeGame->name);
+    printf("Now playing `%s`\n", config.modState.activeGame->name);
     
     // End game
-    Cilent_ModState_Destroy(modState);
     Cilent_Config_Save(&config);
+    Cilent_Config_Destroy(&config);
     
     printf("Goodbye, World!\n");
     

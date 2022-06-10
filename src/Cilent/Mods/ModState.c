@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include "ModState.h"
 #include "../Flecs/Maps.h"
+#include "../../vendor/ini-master/src/ini.h"
 
-Cilent_ModState Cilent_ModState_Load(char* activeGame)
+Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni)
 {
     Cilent_ModState modState;
     memset(&modState, 0, sizeof(Cilent_ModState));
@@ -27,9 +28,23 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame)
         assert(modState.activeGame != NULL);
     }
     
-    // TODO: Active addons
     modState.activeAddons = malloc(sizeof(Cilent_Mod*) * modState.addonsCount);
     modState.activeAddonsCount = 0;
+    for (int i = 0; i < modState.addonsCount; i++) {
+        int isModActive;
+        
+        if (
+            !ini_sget(configIni, "addons", modState.addons[i].name, "%d", &isModActive)
+            || !isModActive
+        ) {
+            continue;
+        }
+        
+        modState.activeAddons[modState.activeAddonsCount] = &modState.addons[i];
+        modState.activeAddonsCount++;
+        
+        printf("Mod is active: `%s`\n", modState.addons[i].name);
+    }
     
     snprintf(
         activeGame,
@@ -44,6 +59,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame)
 void Cilent_ModState_Destroy(Cilent_ModState modState)
 {
     ecs_map_free(modState.map);
+    free(modState.activeAddons);
     
     for (int i = 0; i < fmax(modState.addonsCount, modState.gamesCount); i++) {
         if (i < modState.gamesCount) {

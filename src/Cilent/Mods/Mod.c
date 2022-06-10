@@ -91,7 +91,7 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
     *pModsAddon = realloc(modsAddon, sizeof(Cilent_Mod) * (*pModsAddonCount));
     
     // TODO: Resize mods map down to actual size
-    // map = ecs_map_new(Cilent_Mod*, (*pModsGameCount) + (*pModsAddonCount));
+    // Maybe just create the map here & re-loop over the mods?
     
     return map;
 }
