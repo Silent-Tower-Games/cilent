@@ -1,5 +1,6 @@
 #include "Mod.h"
 #include "../Flecs/Maps.h"
+#include "../Misc/Log.h"
 #include <SDL2/SDL.h>
 #include <assert.h>
 #include <dirent.h>
@@ -58,7 +59,7 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
         }
         
         if (snprintf(path, pathLength, "%s/%s", directory, list[listLength]->d_name) >= pathLength) {
-            printf("Path name too long (limit: %d characters)! `%s/%s`\n", pathLength - 1, directory, list[listLength]->d_name);
+            debug_log("Path name too long (limit: %d characters)! `%s/%s`", pathLength - 1, directory, list[listLength]->d_name);
             continue;
         }
         

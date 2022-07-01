@@ -2,6 +2,7 @@
 #include <Cilent/Cilent.h>
 #include <Cilent/Config/Config.h>
 #include <Cilent/Flecs/Maps.h>
+#include <Cilent/Misc/Log.h>
 #include <Cilent/Mods/ModState.h>
 #include <SDL2/SDL.h>
 #include <Sprender/Sprender.h>
@@ -11,7 +12,7 @@
 
 int main(int argc, char** argv)
 {
-    printf("%s\n", Cilent_HelloWorld());
+    debug_log("%s", Cilent_HelloWorld());
     
     ecs_os_init();
     
@@ -27,13 +28,13 @@ int main(int argc, char** argv)
     
     assert(config.modState.activeGame != NULL);
     
-    printf("Now playing `%s`\n", config.modState.activeGame->name);
+    debug_log("Now playing `%s`", config.modState.activeGame->name);
     
     // End game
     Cilent_Config_Save(&config);
     Cilent_Config_Destroy(&config);
     
-    printf("Goodbye, World!\n");
+    debug_log("Goodbye, World!");
     
     SDL_Quit();
     

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "ModState.h"
 #include "../Flecs/Maps.h"
+#include "../Misc/Log.h"
 #include "../../vendor/ini-master/src/ini.h"
 
 Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni)
@@ -21,8 +22,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni)
     modState.activeGame = map_get(modState.map, activeGame, Cilent_Mod);
     
     if (modState.activeGame == NULL || !modState.activeGame->game) {
-        // TODO: Log that the selected game could not be loaded
-        printf("Could not load mod `%s`!\n", activeGame);
+        debug_log("Could not load mod `%s`!", activeGame);
         
         modState.activeGame = map_get(modState.map, "base", Cilent_Mod);
         
@@ -44,7 +44,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni)
         modState.activeAddons[modState.activeAddonsCount] = &modState.addons[i];
         modState.activeAddonsCount++;
         
-        printf("Mod is active: `%s`\n", modState.addons[i].name);
+        debug_log("Mod is active: `%s`", modState.addons[i].name);
     }
     
     snprintf(
