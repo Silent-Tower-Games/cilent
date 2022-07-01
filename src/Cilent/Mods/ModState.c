@@ -22,6 +22,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni)
     
     if (modState.activeGame == NULL || !modState.activeGame->game) {
         // TODO: Log that the selected game could not be loaded
+        printf("Could not load mod `%s`!\n", activeGame);
         
         modState.activeGame = map_get(modState.map, "base", Cilent_Mod);
         

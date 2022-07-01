@@ -4,14 +4,14 @@
 #include "Config.h"
 #include "../../vendor/ini-master/src/ini.h"
 
-#define CILENT_CONFIG_LOAD_STRING(name) { \
+#define CILENT_CONFIG_LOAD_STRING(name, max) { \
     const char* strTemp = ini_get( \
         configIni, \
         "", \
         #name \
     ); \
     if (strTemp != NULL && strTemp[0] != '\0') { \
-        snprintf(config->name, 5, "%s", strTemp); \
+        snprintf(config->name, max, "%s", strTemp); \
     } \
 }
 
@@ -76,9 +76,9 @@ static char Cilent_Config_Load(Cilent_Config* config, ini_t* configIni)
         return 0;
     }
     
-    CILENT_CONFIG_LOAD_STRING(language);
+    CILENT_CONFIG_LOAD_STRING(language, 5);
     CILENT_CONFIG_LOAD_INT(debug);
-    CILENT_CONFIG_LOAD_STRING(mod);
+    CILENT_CONFIG_LOAD_STRING(mod, 1023);
     
     return 1;
 }
@@ -87,14 +87,17 @@ Cilent_Config Cilent_Config_Create(Cilent_Config configDefault)
 {
     Cilent_Config config = configDefault;
     
+    // Make sure the given language isn't in an invalid format
     assert(Cilent_Config_LanguageIsValid(configDefault.language));
     
+    // Load the config INI file
     ini_t* configIni = ini_load(Cilent_Config_GetFilename(&config));
-    
     Cilent_Config_Load(&config, configIni);
     
+    // Create the mod state, which also loads all mods
     config.modState = Cilent_ModState_Load(config.mod, configIni);
     
+    // After having loaded the INI file, close & free it
     ini_free(configIni);
     
     return config;
@@ -125,6 +128,9 @@ char Cilent_Config_Save(Cilent_Config* config)
 
 char* Cilent_Config_FileData(Cilent_Config* config)
 {
+    // TODO: make this function private
+    // TODO: save addons
+    
     char* fmt = (
         "language=%s\n"
         "debug=%d\n"
