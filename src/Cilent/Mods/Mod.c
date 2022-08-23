@@ -70,7 +70,7 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
             Cilent_Mod mod = Cilent_Mod_CreateFromPath(list[listLength]->d_name, path);
             Cilent_Mod* pMod = NULL;
             
-            if (mod.game) {
+            if (mod.isGame) {
                 pMod = &modsGame[*pModsGameCount];
                 (*pModsGameCount)++;
             } else {
@@ -104,7 +104,7 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     Cilent_Mod mod;
     snprintf(mod.name, 127, "%s", name);
     mod.active = 0;
-    mod.game = 0;
+    mod.isGame = 0;
     
     // Build config.ini file path
     char* iniFilename = "config.ini";
@@ -117,7 +117,7 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     mod.ini = ini_load(mod.iniFilename);
     
     // Set whether or not this is a full game mod
-    ini_sget(mod.ini, "project", "game", "%c", &mod.game);
+    ini_sget(mod.ini, "project", "game", "%c", &mod.isGame);
     
     return mod;
 }

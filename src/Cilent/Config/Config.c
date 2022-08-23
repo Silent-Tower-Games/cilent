@@ -28,8 +28,6 @@
     } \
 }
 
-static char* Cilent_Config_Languages[125];
-
 static char Cilent_Config_Filename[1024] = "\0";
 
 static char Cilent_Config_LanguageIsValid(char* lang)
@@ -78,9 +76,72 @@ static char Cilent_Config_Load(Cilent_Config* config, ini_t* configIni)
     
     CILENT_CONFIG_LOAD_STRING(language, 5);
     CILENT_CONFIG_LOAD_INT(debug);
-    CILENT_CONFIG_LOAD_STRING(game, 1023);
+    CILENT_CONFIG_LOAD_STRING(game, 127);
     
     return 1;
+}
+
+static char* Cilent_Config_FileData_ModState_List(Cilent_ModState* modState)
+{
+    //modState->activeAddonsCount
+    char* data = malloc(
+        sizeof(char) * (
+            (127 * modState->activeAddonsCount) // mod names
+            + 3 // "=1" plus linebreak
+            + 1 // null terminator
+        )
+    );
+    
+    int length = 0;
+    for (int i = 0; i < modState->activeAddonsCount; i++) {
+        snprintf(
+            &data[length],
+            127 + 3 + 1,
+            "%s=1\n",
+            modState->activeAddons[i]->name
+        );
+        
+        length += strlen(modState->activeAddons[i]->name) + 3;
+    }
+    data[length] = '\0';
+    
+    return data;
+}
+
+static char* Cilent_Config_FileData(Cilent_Config* config)
+{
+    const char* fmt = (
+        "language=%s\n"
+        "debug=%d\n"
+        "game=%s\n"
+        "\n"
+        "[mods]\n"
+        "%s\n"
+        "[testing]\n"
+    );
+    const char* modStateList = Cilent_Config_FileData_ModState_List(&config->modState);
+    char* data = malloc(
+        sizeof(char) * (
+            (strlen(fmt) + 1) // format string
+            - 6 // format standins
+            + 5 // language
+            + 1 // debug
+            + strlen(config->game) // game
+            + strlen(modStateList) // addons
+            + 1 // null terminator
+        )
+    );
+    sprintf(
+        data,
+        fmt,
+        config->language,
+        config->debug ? 1 : 0, // only 0 or 1
+        config->game,
+        modStateList
+    );
+    free(modStateList);
+    
+    return data;
 }
 
 Cilent_Config Cilent_Config_Create(Cilent_Config configDefault)
@@ -124,37 +185,6 @@ char Cilent_Config_Save(Cilent_Config* config)
     free(data);
     
     return 1;
-}
-
-char* Cilent_Config_FileData(Cilent_Config* config)
-{
-    // TODO: make this function private
-    // TODO: save addons
-    
-    char* fmt = (
-        "language=%s\n"
-        "debug=%d\n"
-        "game=%s\n"
-    );
-    char* data = malloc(
-        sizeof(char) * (
-            (strlen(fmt) + 1) // format string
-            - 6 // format standins
-            + 5 // language
-            + 1 // debug
-            + strlen(config->game) // game
-            + 1 // null terminator
-        )
-    );
-    sprintf(
-        data,
-        fmt,
-        config->language,
-        config->debug % 2, // only 0 or 1
-        config->game
-    );
-    
-    return data;
 }
 
 void Cilent_Config_Destroy(Cilent_Config* config)

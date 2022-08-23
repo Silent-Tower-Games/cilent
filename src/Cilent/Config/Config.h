@@ -15,6 +15,4 @@ Cilent_Config Cilent_Config_Create(Cilent_Config configDefault);
 
 char Cilent_Config_Save(Cilent_Config* config);
 
-char* Cilent_Config_FileData(Cilent_Config* config);
-
 void Cilent_Config_Destroy(Cilent_Config* config);
