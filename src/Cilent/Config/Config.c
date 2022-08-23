@@ -130,7 +130,7 @@ static char* Cilent_Config_FileData(Cilent_Config* config)
         "debug=%d\n"
         "game=%s\n"
         "\n"
-        "[mods]\n"
+        "[addons]\n"
         "%s\n"
         "[testing]\n"
     );
@@ -138,7 +138,7 @@ static char* Cilent_Config_FileData(Cilent_Config* config)
     char* data = malloc(
         sizeof(char) * (
             (strlen(fmt) + 1) // format string
-            - 6 // format standins
+            - 8 // format standins
             + 5 // language
             + 1 // debug
             + strlen(config->game) // game

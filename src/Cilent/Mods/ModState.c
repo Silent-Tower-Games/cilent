@@ -35,7 +35,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni)
         int isModActive;
         
         if (
-            !ini_sget(configIni, "mods", modState.addons[i].name, "%d", &isModActive)
+            !ini_sget(configIni, "addons", modState.addons[i].name, "%d", &isModActive)
             || !isModActive
         ) {
             continue;
