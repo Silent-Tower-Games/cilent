@@ -78,7 +78,7 @@ static char Cilent_Config_Load(Cilent_Config* config, ini_t* configIni)
     
     CILENT_CONFIG_LOAD_STRING(language, 5);
     CILENT_CONFIG_LOAD_INT(debug);
-    CILENT_CONFIG_LOAD_STRING(mod, 1023);
+    CILENT_CONFIG_LOAD_STRING(game, 1023);
     
     return 1;
 }
@@ -95,7 +95,7 @@ Cilent_Config Cilent_Config_Create(Cilent_Config configDefault)
     Cilent_Config_Load(&config, configIni);
     
     // Create the mod state, which also loads all mods
-    config.modState = Cilent_ModState_Load(config.mod, configIni);
+    config.modState = Cilent_ModState_Load(config.game, configIni);
     
     // After having loaded the INI file, close & free it
     ini_free(configIni);
@@ -134,7 +134,7 @@ char* Cilent_Config_FileData(Cilent_Config* config)
     char* fmt = (
         "language=%s\n"
         "debug=%d\n"
-        "mod=%s\n"
+        "game=%s\n"
     );
     char* data = malloc(
         sizeof(char) * (
@@ -142,7 +142,7 @@ char* Cilent_Config_FileData(Cilent_Config* config)
             - 6 // format standins
             + 5 // language
             + 1 // debug
-            + strlen(config->mod) // mod
+            + strlen(config->game) // game
             + 1 // null terminator
         )
     );
@@ -151,7 +151,7 @@ char* Cilent_Config_FileData(Cilent_Config* config)
         fmt,
         config->language,
         config->debug % 2, // only 0 or 1
-        config->mod
+        config->game
     );
     
     return data;

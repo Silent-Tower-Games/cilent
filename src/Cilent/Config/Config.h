@@ -7,7 +7,7 @@ typedef struct Cilent_Config {
     char debug;
     char language[6];
     char org[1024];
-    char mod[128];
+    char game[128];
     Cilent_ModState modState;
 } Cilent_Config;
 
