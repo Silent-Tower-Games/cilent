@@ -93,9 +93,11 @@ static char* Cilent_Config_FileData_ModState_List(Cilent_ModState* modState)
 {
     char* data = malloc(
         sizeof(char) * (
-            (127 * modState->activeAddonsCount) // mod names
-            + 3 // "=1" plus linebreak
-            + 1 // null terminator
+            (
+                127 // mod name length
+                + 3 // length of "=1\n"; "\n" is one character
+                + 1 // null terminator
+            ) * modState->activeAddonsCount // number of active addons
         )
     );
     
