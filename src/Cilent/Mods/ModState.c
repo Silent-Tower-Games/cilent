@@ -21,7 +21,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni)
     
     modState.activeGame = map_get(modState.map, activeGame, Cilent_Mod);
     
-    if (modState.activeGame == NULL || !modState.activeGame->game) {
+    if (modState.activeGame == NULL || !modState.activeGame->isGame) {
         debug_log("Could not load mod `%s`!", activeGame);
         
         modState.activeGame = map_get(modState.map, "base", Cilent_Mod);

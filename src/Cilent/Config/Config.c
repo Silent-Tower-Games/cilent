@@ -28,8 +28,6 @@
     } \
 }
 
-static char* Cilent_Config_Languages[125];
-
 static char Cilent_Config_Filename[1024] = "\0";
 
 static char Cilent_Config_LanguageIsValid(char* lang)
@@ -78,9 +76,87 @@ static char Cilent_Config_Load(Cilent_Config* config, ini_t* configIni)
     
     CILENT_CONFIG_LOAD_STRING(language, 5);
     CILENT_CONFIG_LOAD_INT(debug);
-    CILENT_CONFIG_LOAD_STRING(mod, 1023);
+    CILENT_CONFIG_LOAD_STRING(game, 127);
     
     return 1;
+}
+
+/**
+ * @brief Get an allocated INI-formatted list of active addons.
+ *
+ * Return value must be freed.
+ * 
+ * @param modState mod state from config
+ * @return char* active addons in INI format
+ */
+static char* Cilent_Config_FileData_ModState_List(Cilent_ModState* modState)
+{
+    char* data = malloc(
+        sizeof(char) * (
+            (
+                127 // mod name length
+                + 3 // length of "=1\n"; "\n" is one character
+                + 1 // null terminator
+            ) * modState->activeAddonsCount // number of active addons
+        )
+    );
+    
+    int length = 0;
+    for (int i = 0; i < modState->activeAddonsCount; i++) {
+        snprintf(
+            &data[length],
+            127 + 3 + 1,
+            "%s=1\n",
+            modState->activeAddons[i]->name
+        );
+        
+        length += strlen(modState->activeAddons[i]->name) + 3;
+    }
+    data[length] = '\0';
+    
+    return data;
+}
+
+/**
+ * @brief Get the config as an allocated INI-formatted string.
+ * 
+ * @param config config state
+ * @return char* config state in INI format
+ */
+static char* Cilent_Config_FileData(Cilent_Config* config)
+{
+    const char* fmt = (
+        "language=%s\n"
+        "debug=%d\n"
+        "game=%s\n"
+        "\n"
+        "[addons]\n"
+        "%s\n"
+        "[testing]\n"
+    );
+    const char* modStateList = Cilent_Config_FileData_ModState_List(&config->modState);
+    char* data = malloc(
+        sizeof(char) * (
+            (strlen(fmt) + 1) // format string
+            - 8 // format standins
+            + 5 // language
+            + 1 // debug
+            + strlen(config->game) // game
+            + strlen(modStateList) // addons
+            + 1 // null terminator
+        )
+    );
+    sprintf(
+        data,
+        fmt,
+        config->language,
+        config->debug ? 1 : 0, // only 0 or 1
+        config->game,
+        modStateList
+    );
+    free(modStateList);
+    
+    return data;
 }
 
 Cilent_Config Cilent_Config_Create(Cilent_Config configDefault)
@@ -95,7 +171,7 @@ Cilent_Config Cilent_Config_Create(Cilent_Config configDefault)
     Cilent_Config_Load(&config, configIni);
     
     // Create the mod state, which also loads all mods
-    config.modState = Cilent_ModState_Load(config.mod, configIni);
+    config.modState = Cilent_ModState_Load(config.game, configIni);
     
     // After having loaded the INI file, close & free it
     ini_free(configIni);
@@ -124,37 +200,6 @@ char Cilent_Config_Save(Cilent_Config* config)
     free(data);
     
     return 1;
-}
-
-char* Cilent_Config_FileData(Cilent_Config* config)
-{
-    // TODO: make this function private
-    // TODO: save addons
-    
-    char* fmt = (
-        "language=%s\n"
-        "debug=%d\n"
-        "mod=%s\n"
-    );
-    char* data = malloc(
-        sizeof(char) * (
-            (strlen(fmt) + 1) // format string
-            - 6 // format standins
-            + 5 // language
-            + 1 // debug
-            + strlen(config->mod) // mod
-            + 1 // null terminator
-        )
-    );
-    sprintf(
-        data,
-        fmt,
-        config->language,
-        config->debug % 2, // only 0 or 1
-        config->mod
-    );
-    
-    return data;
 }
 
 void Cilent_Config_Destroy(Cilent_Config* config)

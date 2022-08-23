@@ -23,7 +23,7 @@ int main(int argc, char** argv)
         .org = "Silent Tower Games",
         .app = "My Game",
         .language = "en",
-        .mod = "my-custom-mod",
+        .game = "my-custom-mod",
     });
     
     assert(config.modState.activeGame != NULL);
