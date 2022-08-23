@@ -81,9 +81,16 @@ static char Cilent_Config_Load(Cilent_Config* config, ini_t* configIni)
     return 1;
 }
 
+/**
+ * @brief Get an allocated INI-formatted list of active addons.
+ *
+ * Return value must be freed.
+ * 
+ * @param modState mod state from config
+ * @return char* active addons in INI format
+ */
 static char* Cilent_Config_FileData_ModState_List(Cilent_ModState* modState)
 {
-    //modState->activeAddonsCount
     char* data = malloc(
         sizeof(char) * (
             (127 * modState->activeAddonsCount) // mod names
@@ -108,6 +115,12 @@ static char* Cilent_Config_FileData_ModState_List(Cilent_ModState* modState)
     return data;
 }
 
+/**
+ * @brief Get the config as an allocated INI-formatted string.
+ * 
+ * @param config config state
+ * @return char* config state in INI format
+ */
 static char* Cilent_Config_FileData(Cilent_Config* config)
 {
     const char* fmt = (
