@@ -30,6 +30,10 @@ int main(int argc, char** argv)
     
     debug_log("Now playing `%s`", config.modState.activeGame->name);
     
+    debug_log_type(SUCCESS, "This is a success test;");
+    debug_log_type(ERROR, "This is an error test.");
+    debug_log_type(INFO, "This is an info test!");
+    
     // End game
     Cilent_Config_Save(&config);
     Cilent_Config_Destroy(&config);
