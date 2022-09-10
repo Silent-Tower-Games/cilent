@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     
     SDL_Init(0);
     
-    Cilent_Lang* lang = Cilent_Lang_Load("base", "es");
+    Cilent_Lang* lang = Cilent_Lang_Load("base", "en");
     
     printf("Lang `dialogue:hello`: `%s`\n", Cilent_Lang_Get(lang, "dialogue", "hello"));
     

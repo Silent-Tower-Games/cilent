@@ -1,4 +1,5 @@
 #include "Lang.h"
+#include <Cilent/Misc/Log.h>
 
 Cilent_Lang* Cilent_Lang_Load(char* mod, char* language)
 {
@@ -38,6 +39,16 @@ Cilent_Lang* Cilent_Lang_Load(char* mod, char* language)
 char* Cilent_Lang_Get(Cilent_Lang* lang, char* section, char* key)
 {
     char* value = ini_get(lang->data, section, key);
+    
+    if (value == NULL) {
+        debug_log_type(
+            ERROR,
+            "Lang key not found: `%s:%s:%s`",
+            lang->language,
+            section,
+            key
+        );
+    }
     
     return value;
 }
