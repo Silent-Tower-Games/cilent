@@ -2,6 +2,7 @@
 #include <Cilent/Cilent.h>
 #include <Cilent/Config/Config.h>
 #include <Cilent/Flecs/Maps.h>
+#include <Cilent/Lang/Lang.h>
 #include <Cilent/Misc/Log.h>
 #include <Cilent/Mods/ModState.h>
 #include <SDL2/SDL.h>
@@ -18,6 +19,13 @@ int main(int argc, char** argv)
     
     SDL_Init(0);
     
+    Cilent_Lang* lang = Cilent_Lang_Load("base", "es");
+    
+    printf("Lang `dialogue:hello`: `%s`\n", Cilent_Lang_Get(lang, "dialogue", "hello"));
+    
+    Cilent_Lang_Destroy(lang);
+    
+    /*
     Cilent_Config config = Cilent_Config_Create((Cilent_Config) {
         .debug = 0,
         .org = "Silent Tower Games",

@@ -134,7 +134,7 @@ static char* Cilent_Config_FileData(Cilent_Config* config)
         "%s\n"
         "[testing]\n"
     );
-    const char* modStateList = Cilent_Config_FileData_ModState_List(&config->modState);
+    char* modStateList = Cilent_Config_FileData_ModState_List(&config->modState);
     char* data = malloc(
         sizeof(char) * (
             (strlen(fmt) + 1) // format string
