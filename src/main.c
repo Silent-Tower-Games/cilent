@@ -21,7 +21,11 @@ int main(int argc, char** argv)
     
     Cilent_Lang* lang = Cilent_Lang_Load("base", "en");
     
-    printf("Lang `dialogue:hello`: `%s`\n", Cilent_Lang_Get(lang, "dialogue", "hello"));
+    printf(
+        "Lang `dialogue:hello:%s`: `%s`\n",
+        lang->language,
+        Cilent_Lang_Get(lang, "dialogue", "hello")
+    );
     
     Cilent_Lang_Destroy(lang);
     
