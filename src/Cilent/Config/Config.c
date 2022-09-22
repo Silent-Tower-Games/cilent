@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
 #include <stdio.h>
+#include <Cilent/Misc/Assert.h>
 #include "Config.h"
 #include "../../vendor/ini-master/src/ini.h"
 
@@ -171,7 +171,7 @@ Cilent_Config Cilent_Config_Create(Cilent_Config configDefault)
     Cilent_Config config = configDefault;
     
     // Make sure the given language isn't in an invalid format
-    assert(Cilent_Config_LanguageIsValid(configDefault.language));
+    CILENT_ASSERT(Cilent_Config_LanguageIsValid(configDefault.language));
     
     // Load the config INI file
     ini_t* configIni = ini_load(Cilent_Config_GetFilename(&config));

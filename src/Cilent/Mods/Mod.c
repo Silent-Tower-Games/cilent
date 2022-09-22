@@ -1,8 +1,3 @@
-#include "Mod.h"
-#include "../Flecs/Maps.h"
-#include "../Misc/Log.h"
-#include <SDL2/SDL.h>
-#include <assert.h>
 #include <dirent.h>
 #include <flecs.h>
 #include <stdio.h>
@@ -11,18 +6,23 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <SDL2/SDL.h>
+#include <Cilent/Misc/Assert.h>
+#include <Cilent/Misc/Log.h>
+#include <Cilent/Flecs/Maps.h>
+#include "Mod.h"
 
 void Cilent_Mod_Init();
 
 ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod** pModsAddon, int* pModsAddonCount)
 {
     // Assert these pointers actually go somewhere
-    assert(pModsGame != NULL);
-    assert(pModsAddon != NULL);
+    CILENT_ASSERT(pModsGame != NULL);
+    CILENT_ASSERT(pModsAddon != NULL);
     // Assert that the pointers' values are null pointers
     // This is to assure that we aren't throwing away any memory by setting them
-    assert(*pModsGame == NULL);
-    assert(*pModsAddon == NULL);
+    CILENT_ASSERT(*pModsGame == NULL);
+    CILENT_ASSERT(*pModsAddon == NULL);
     
     // Set up all of the directory searching stuff
     // This also gets us the highest possible mod count in listLength
@@ -99,7 +99,7 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
 
 Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
 {
-    assert(path != NULL);
+    CILENT_ASSERT(path != NULL);
     
     Cilent_Mod mod;
     memset(&mod, 0, sizeof(mod));
@@ -140,7 +140,7 @@ void Cilent_Mod_Step(Cilent_Mod* mod)
 
 void Cilent_Mod_Destroy(Cilent_Mod* mod)
 {
-    assert(mod != NULL);
+    CILENT_ASSERT(mod != NULL);
     
     free(mod->iniFilename);
     ini_free(mod->ini);

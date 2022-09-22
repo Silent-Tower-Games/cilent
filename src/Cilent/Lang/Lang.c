@@ -2,9 +2,9 @@
 #include <Cilent/Flecs/Maps.h>
 #include <Cilent/Misc/Log.h>
 
-Cilent_Lang* Cilent_Lang_Load(char* mod, char* language)
+Cilent_Lang* Cilent_Lang_Load(const char* mod, const char* language)
 {
-    assert(strnlen(language, 5) <= 5);
+    CILENT_ASSERT(strnlen(language, 5) <= 5);
     
     Cilent_Lang* lang = (Cilent_Lang*)malloc(sizeof(Cilent_Lang));
     

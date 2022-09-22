@@ -1,18 +1,18 @@
-#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "ModState.h"
 #include <Cilent/Flecs/Maps.h>
+#include <Cilent/Misc/Assert.h>
 #include <Cilent/Misc/File.h>
 #include <Cilent/Misc/Log.h>
 #include "../../vendor/ini-master/src/ini.h"
 
 Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const char* language)
 {
-    assert(language != NULL);
-    assert(strnlen(language, 5) <= 5);
+    CILENT_ASSERT(language != NULL);
+    CILENT_ASSERT(strnlen(language, 5) <= 5);
     
     Cilent_ModState modState;
     memset(&modState, 0, sizeof(Cilent_ModState));
@@ -32,8 +32,8 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
         modState.activeGame = map_get(modState.map, "base", Cilent_Mod);
     }
     
-    assert(modState.activeGame != NULL);
-    assert(Cilent_ModState_Mod_Activate(&modState, modState.activeGame->name, language));
+    CILENT_ASSERT(modState.activeGame != NULL);
+    CILENT_ASSERT(Cilent_ModState_Mod_Activate(&modState, modState.activeGame->name, language));
     
     modState.activeAddons = malloc(sizeof(Cilent_Mod*) * modState.addonsCount);
     modState.activeAddonsCount = 0;
@@ -62,15 +62,15 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
 
 char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey, const char* language)
 {
-    assert(modKey != NULL);
-    assert(language != NULL);
-    assert(strnlen(language, 5) <= 5);
-    assert(modState->activeAddonsCount < modState->addonsCount);
+    CILENT_ASSERT(modKey != NULL);
+    CILENT_ASSERT(language != NULL);
+    CILENT_ASSERT(strnlen(language, 5) <= 5);
+    CILENT_ASSERT(modState->activeAddonsCount < modState->addonsCount);
     
     Cilent_Mod* mod = map_get(modState->map, modKey, Cilent_Mod);
     
-    assert(mod != NULL);
-    assert(!mod->active);
+    CILENT_ASSERT(mod != NULL);
+    CILENT_ASSERT(!mod->active);
     
     if (mod->hasLang)
     {
@@ -97,13 +97,13 @@ char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey,
 
 void Cilent_ModState_Mod_Deactivate(Cilent_ModState* modState, const char* modKey)
 {
-    assert(modKey != NULL);
-    assert(modState->activeAddonsCount > 0);
+    CILENT_ASSERT(modKey != NULL);
+    CILENT_ASSERT(modState->activeAddonsCount > 0);
     
     Cilent_Mod* mod = map_get(modState->map, modKey, Cilent_Mod);
     
-    assert(mod->active);
-    assert(!mod->isGame);
+    CILENT_ASSERT(mod->active);
+    CILENT_ASSERT(!mod->isGame);
     
     char found = -1;
     for (int i = 0; i < modState->activeAddonsCount; i++) {
@@ -116,8 +116,8 @@ void Cilent_ModState_Mod_Deactivate(Cilent_ModState* modState, const char* modKe
         break;
     }
     
-    assert(found != -1);
-    assert(found < modState->activeAddonsCount);
+    CILENT_ASSERT(found != -1);
+    CILENT_ASSERT(found < modState->activeAddonsCount);
     
     mod->active = false;
     memcpy(
@@ -132,7 +132,7 @@ void Cilent_ModState_Mod_Deactivate(Cilent_ModState* modState, const char* modKe
 
 const char* Cilent_ModState_Lang_Find(
     Cilent_ModState* modState,
-    const char* mod,
+    char* mod,
     const char* section,
     const char* key
 )
