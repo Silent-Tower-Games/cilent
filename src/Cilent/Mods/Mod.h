@@ -2,6 +2,7 @@
 
 #include "../../vendor/ini-master/src/ini.h"
 #include <flecs.h>
+#include <Cilent/Lang/Lang.h>
 
 typedef struct Cilent_Mod {
     char* iniFilename;
@@ -9,6 +10,8 @@ typedef struct Cilent_Mod {
     char name[128];
     char active;
     char isGame;
+    char hasLang;
+    Cilent_Lang* lang;
 } Cilent_Mod;
 
 ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** modsGame, int* pModsGameCount, Cilent_Mod** modsMod, int* pModsModCount);

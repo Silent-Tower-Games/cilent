@@ -14,6 +14,10 @@ typedef struct Cilent_ModState {
     int activeAddonsCount;
 } Cilent_ModState;
 
-Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni);
+Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const char* language);
+
+void Cilent_ModState_Activate(Cilent_ModState* modState, const char* modKey, const char* language);
+
+void Cilent_ModState_Deactivate(Cilent_ModState* modState, const char* modKey);
 
 void Cilent_ModState_Destroy(Cilent_ModState modState);

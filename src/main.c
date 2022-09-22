@@ -19,17 +19,17 @@ int main(int argc, char** argv)
     
     SDL_Init(0);
     
+    /*
     Cilent_Lang* lang = Cilent_Lang_Load("base", "en");
-    
     printf(
         "Lang `dialogue:hello:%s`: `%s`\n",
         lang->language,
         Cilent_Lang_Get(lang, "dialogue", "hello")
     );
-    
     Cilent_Lang_Destroy(lang);
+    //*/
     
-    /*
+    //*
     Cilent_Config config = Cilent_Config_Create((Cilent_Config) {
         .debug = 0,
         .org = "Silent Tower Games",

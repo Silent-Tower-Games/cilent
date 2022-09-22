@@ -36,9 +36,9 @@ Cilent_Lang* Cilent_Lang_Load(char* mod, char* language)
     return lang;
 }
 
-char* Cilent_Lang_Get(Cilent_Lang* lang, char* section, char* key)
+const char* Cilent_Lang_Get(Cilent_Lang* lang, const char* section, const char* key)
 {
-    char* value = ini_get(lang->data, section, key);
+    const char* value = ini_get(lang->data, section, key);
     
     if (value == NULL) {
         debug_log_type(

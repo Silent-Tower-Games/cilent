@@ -105,6 +105,7 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     snprintf(mod.name, 127, "%s", name);
     mod.active = 0;
     mod.isGame = 0;
+    mod.hasLang = 0;
     
     // Build config.ini file path
     char* iniFilename = "config.ini";
@@ -117,7 +118,20 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     mod.ini = ini_load(mod.iniFilename);
     
     // Set whether or not this is a full game mod
-    ini_sget(mod.ini, "project", "game", "%c", &mod.isGame);
+    mod.isGame = (
+        ini_sget(mod.ini, "project", "game", "%c", &mod.isGame)
+        && mod.isGame
+    );
+    
+    debug_log("%s isGame: %d", mod.name, mod.isGame);
+    
+    // Set whether or not this mod needs a language file
+    mod.hasLang = (
+        ini_sget(mod.ini, "project", "lang", "%c", &mod.hasLang)
+        && mod.hasLang
+    );
+    
+    debug_log("%s hasLang: %d", mod.name, mod.hasLang);
     
     return mod;
 }
@@ -125,7 +139,7 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
 void Cilent_Mod_Step(Cilent_Mod* mod)
 {
     // I don't know what this is going to look like yet
-
+    
     // A mod should probably not execute unless it has a language file in the
     // currently-selected language...
 }
