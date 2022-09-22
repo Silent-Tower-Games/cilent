@@ -1,7 +1,8 @@
 # Anything in .vscode except the example files
 .vscode/*
 !.vscode/*.example.json
-# Valgrind
+# Logs
+log.txt
 valgrind.txt
 # Binaries
 *.o

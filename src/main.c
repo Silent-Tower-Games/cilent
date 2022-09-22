@@ -37,8 +37,10 @@ int main(int argc, char** argv)
     );
     //*/
     
+    Cilent_Log_ToFile(1);
     debug_log_type(SUCCESS, "This is a success test;");
     debug_log_type(ERROR, "This is an error test.");
+    Cilent_Log_ToFile(0);
     debug_log_type(INFO, "This is an info test!");
     
     // End game
