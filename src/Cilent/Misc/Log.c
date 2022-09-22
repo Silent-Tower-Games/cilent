@@ -15,11 +15,12 @@ static char Cilent_Log_ToFile_Value = 0;
 
 static const char* Cilent_Log_Timestamp()
 {
-    char* text = malloc(sizeof(char) * 20);
+    const size_t textLength = 20;
+    char* text = malloc(sizeof(char) * textLength);
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
     
-    strftime(text, 19, "%Y/%m/%d %H:%M", t);
+    strftime(text, textLength - 1, "%Y/%m/%d %H:%M", t);
     
     return text;
 }
