@@ -22,7 +22,7 @@ void Cilent_ModState_Mod_Deactivate(Cilent_ModState* modState, const char* modKe
 
 const char* Cilent_ModState_Lang_Find(
     Cilent_ModState* modState,
-    const char* mod,
+    char* mod,
     const char* section,
     const char* key
 );

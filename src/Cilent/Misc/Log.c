@@ -1,6 +1,7 @@
 #include "Log.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #define CILENT_LOG_TYPE_TO_STRING_LENGTH 3
@@ -42,6 +43,7 @@ void Cilent_Log(Cilent_Log_Type type, char* fmt, ...)
         fprintf(file, "%s [%s]: ", Cilent_Log_Timestamp(), typeString);
         vfprintf(file, fmt, args);
         fprintf(file, "\n");
+        fclose(file);
     }
     else
     {

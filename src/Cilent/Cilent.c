@@ -1,5 +1,5 @@
 #include "Cilent.h"
-#include <assert.h>
+#include <Cilent/Misc/Assert.h>
 
 char* Cilent_HelloWorld()
 {
@@ -27,7 +27,7 @@ Cilent* Cilent_Create()
 
 void Cilent_Destroy(Cilent* cilent)
 {
-    assert(cilent != NULL);
+    CILENT_ASSERT(cilent != NULL);
     
     Sprender_Destroy(cilent->sprender);
     

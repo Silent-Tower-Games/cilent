@@ -1,11 +1,11 @@
 #pragma once
 
-#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <flecs.h>
-#include <vendor/ini-master/src/ini.h>
+#include <Cilent/Misc/Assert.h>
+#include "../../vendor/ini-master/src/ini.h"
 
 typedef struct Cilent_Lang
 {
@@ -13,7 +13,7 @@ typedef struct Cilent_Lang
     ini_t* data;
 } Cilent_Lang;
 
-Cilent_Lang* Cilent_Lang_Load(char* mod, char* language);
+Cilent_Lang* Cilent_Lang_Load(const char* mod, const char* language);
 
 const char* Cilent_Lang_Get(Cilent_Lang* lang, const char* section, const char* key);
 

@@ -3,11 +3,11 @@
 #include <Cilent/Config/Config.h>
 #include <Cilent/Flecs/Maps.h>
 #include <Cilent/Lang/Lang.h>
+#include <Cilent/Misc/Assert.h>
 #include <Cilent/Misc/Log.h>
 #include <Cilent/Mods/ModState.h>
 #include <SDL2/SDL.h>
 #include <Sprender/Sprender.h>
-#include <assert.h>
 #include <flecs.h>
 #include <stdio.h>
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv)
         .game = "my-custom-mod",
     });
     
-    assert(config.modState.activeGame != NULL);
+    CILENT_ASSERT(config.modState.activeGame != NULL);
     
     debug_log("Now playing `%s`", config.modState.activeGame->name);
     
