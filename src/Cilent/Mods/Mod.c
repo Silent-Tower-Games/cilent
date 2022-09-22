@@ -107,9 +107,6 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     mod.isGame = 0;
     mod.hasLang = 0;
     
-    mod.path = malloc(sizeof(char) * (strlen(path) + 1));
-    sprintf(mod.path, "%s", path);
-    
     // Build config.ini file path
     char* iniFilename = "config.ini";
     int iniFilenameStrlen = strlen(path) + strlen(iniFilename) + 2;
@@ -151,7 +148,6 @@ void Cilent_Mod_Destroy(Cilent_Mod* mod)
 {
     assert(mod != NULL);
     
-    free(mod->path);
     free(mod->iniFilename);
     ini_free(mod->ini);
 }

@@ -80,7 +80,7 @@ static char Cilent_Config_Load(Cilent_Config* config, ini_t* configIni)
         return 0;
     }
     
-    CILENT_CONFIG_LOAD_STRING(language, 5);
+    CILENT_CONFIG_LOAD_STRING(language, 6);
     CILENT_CONFIG_LOAD_INT(debug);
     CILENT_CONFIG_LOAD_STRING(game, 127);
     

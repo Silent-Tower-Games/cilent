@@ -30,11 +30,10 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
         debug_log("Could not load mod `%s`!", activeGame);
         
         modState.activeGame = map_get(modState.map, "base", Cilent_Mod);
-        
-        assert(modState.activeGame != NULL);
     }
     
-    // TODO: check activeGame for language compliance
+    assert(modState.activeGame != NULL);
+    assert(Cilent_ModState_Activate(&modState, modState.activeGame->name, language));
     
     modState.activeAddons = malloc(sizeof(Cilent_Mod*) * modState.addonsCount);
     modState.activeAddonsCount = 0;
@@ -72,22 +71,13 @@ char Cilent_ModState_Activate(Cilent_ModState* modState, const char* modKey, con
     
     assert(mod != NULL);
     assert(!mod->active);
-    assert(!mod->isGame);
     
     if (mod->hasLang)
     {
-        const char* langPathFormat = "%s/lang/%s.ini";
-        char* langPath = malloc(
-            strlen(langPathFormat)
-            + strlen(mod->path)
-            + strlen(language)
-            - 4 // replacements
-            + 1 // null terminator
-        );
-        sprintf(langPath, langPathFormat, mod->path, language);
+        mod->lang = Cilent_Lang_Load(modKey, language);
         
-        if (!Cilent_File_Exists(langPath)) {
-            debug_log("Mod not activated: `%s`; missing language file: `%s`", mod->name, langPath);
+        if (mod->lang == NULL) {
+            debug_log("Mod not activated: `%s`; missing language file: `%s`", mod->name, language);
             
             return 0;
         }
@@ -95,8 +85,10 @@ char Cilent_ModState_Activate(Cilent_ModState* modState, const char* modKey, con
     
     mod->active = true;
     
-    modState->activeAddons[modState->activeAddonsCount] = mod;
-    modState->activeAddonsCount++;
+    if (!mod->isGame) {
+        modState->activeAddons[modState->activeAddonsCount] = mod;
+        modState->activeAddonsCount++;
+    }
     
     debug_log("Mod is active: `%s`", mod->name);
     

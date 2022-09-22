@@ -29,9 +29,16 @@ Cilent_Lang* Cilent_Lang_Load(char* mod, char* language)
         language
     );
     
+    debug_log("%s", filename);
     lang->data = ini_load(filename);
-    
     free(filename);
+    
+    if (lang->data == NULL)
+    {
+        Cilent_Lang_Destroy(lang);
+        
+        return NULL;
+    }
     
     return lang;
 }
@@ -55,6 +62,10 @@ const char* Cilent_Lang_Get(Cilent_Lang* lang, const char* section, const char* 
 
 void Cilent_Lang_Destroy(Cilent_Lang* lang)
 {
-    ini_free(lang->data);
+    if (lang->data != NULL)
+    {
+        ini_free(lang->data);
+    }
+    
     free(lang);
 }
