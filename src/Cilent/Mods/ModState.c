@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ModState.h"
-#include "../Flecs/Maps.h"
-#include "../Misc/Log.h"
+#include <Cilent/Flecs/Maps.h>
+#include <Cilent/Misc/File.h>
+#include <Cilent/Misc/Log.h>
 #include "../../vendor/ini-master/src/ini.h"
 
 Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const char* language)
@@ -60,7 +61,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
     return modState;
 }
 
-void Cilent_ModState_Activate(Cilent_ModState* modState, const char* modKey, const char* language)
+char Cilent_ModState_Activate(Cilent_ModState* modState, const char* modKey, const char* language)
 {
     assert(modKey != NULL);
     assert(language != NULL);
@@ -73,7 +74,24 @@ void Cilent_ModState_Activate(Cilent_ModState* modState, const char* modKey, con
     assert(!mod->active);
     assert(!mod->isGame);
     
-    // TODO: check addon for language compliance
+    if (mod->hasLang)
+    {
+        const char* langPathFormat = "%s/lang/%s.ini";
+        char* langPath = malloc(
+            strlen(langPathFormat)
+            + strlen(mod->path)
+            + strlen(language)
+            - 4 // replacements
+            + 1 // null terminator
+        );
+        sprintf(langPath, langPathFormat, mod->path, language);
+        
+        if (!Cilent_File_Exists(langPath)) {
+            debug_log("Mod not activated: `%s`; missing language file: `%s`", mod->name, langPath);
+            
+            return 0;
+        }
+    }
     
     mod->active = true;
     
@@ -81,6 +99,8 @@ void Cilent_ModState_Activate(Cilent_ModState* modState, const char* modKey, con
     modState->activeAddonsCount++;
     
     debug_log("Mod is active: `%s`", mod->name);
+    
+    return 1;
 }
 
 void Cilent_ModState_Deactivate(Cilent_ModState* modState, const char* modKey)

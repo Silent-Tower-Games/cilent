@@ -5,6 +5,8 @@
 #include <Cilent/Lang/Lang.h>
 
 typedef struct Cilent_Mod {
+    char* path;
+    // TODO: maybe we don't need to keep the mod ini filename around lol
     char* iniFilename;
     ini_t* ini;
     char name[128];
