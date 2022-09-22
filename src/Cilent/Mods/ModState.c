@@ -2,13 +2,18 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "ModState.h"
-#include "../Flecs/Maps.h"
-#include "../Misc/Log.h"
+#include <Cilent/Flecs/Maps.h>
+#include <Cilent/Misc/File.h>
+#include <Cilent/Misc/Log.h>
 #include "../../vendor/ini-master/src/ini.h"
 
-Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni)
+Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const char* language)
 {
+    assert(language != NULL);
+    assert(strnlen(language, 5) <= 5);
+    
     Cilent_ModState modState;
     memset(&modState, 0, sizeof(Cilent_ModState));
     
@@ -25,9 +30,10 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni)
         debug_log("Could not load mod `%s`!", activeGame);
         
         modState.activeGame = map_get(modState.map, "base", Cilent_Mod);
-        
-        assert(modState.activeGame != NULL);
     }
+    
+    assert(modState.activeGame != NULL);
+    assert(Cilent_ModState_Mod_Activate(&modState, modState.activeGame->name, language));
     
     modState.activeAddons = malloc(sizeof(Cilent_Mod*) * modState.addonsCount);
     modState.activeAddonsCount = 0;
@@ -41,10 +47,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni)
             continue;
         }
         
-        modState.activeAddons[modState.activeAddonsCount] = &modState.addons[i];
-        modState.activeAddonsCount++;
-        
-        debug_log("Mod is active: `%s`", modState.addons[i].name);
+        Cilent_ModState_Mod_Activate(&modState, modState.addons[i].name, language);
     }
     
     snprintf(
@@ -55,6 +58,109 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni)
     );
     
     return modState;
+}
+
+char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey, const char* language)
+{
+    assert(modKey != NULL);
+    assert(language != NULL);
+    assert(strnlen(language, 5) <= 5);
+    assert(modState->activeAddonsCount < modState->addonsCount);
+    
+    Cilent_Mod* mod = map_get(modState->map, modKey, Cilent_Mod);
+    
+    assert(mod != NULL);
+    assert(!mod->active);
+    
+    if (mod->hasLang)
+    {
+        mod->lang = Cilent_Lang_Load(modKey, language);
+        
+        if (mod->lang == NULL) {
+            debug_log("Mod not activated: `%s`; missing language file: `%s`", mod->name, language);
+            
+            return 0;
+        }
+    }
+    
+    mod->active = true;
+    
+    if (!mod->isGame) {
+        modState->activeAddons[modState->activeAddonsCount] = mod;
+        modState->activeAddonsCount++;
+    }
+    
+    debug_log("Mod is active: `%s`", mod->name);
+    
+    return 1;
+}
+
+void Cilent_ModState_Mod_Deactivate(Cilent_ModState* modState, const char* modKey)
+{
+    assert(modKey != NULL);
+    assert(modState->activeAddonsCount > 0);
+    
+    Cilent_Mod* mod = map_get(modState->map, modKey, Cilent_Mod);
+    
+    assert(mod->active);
+    assert(!mod->isGame);
+    
+    char found = -1;
+    for (int i = 0; i < modState->activeAddonsCount; i++) {
+        if (mod != modState->activeAddons[i]) {
+            continue;
+        }
+        
+        found = i;
+        
+        break;
+    }
+    
+    assert(found != -1);
+    assert(found < modState->activeAddonsCount);
+    
+    mod->active = false;
+    memcpy(
+        &modState->activeAddons[found],
+        &modState->activeAddons[found + 1],
+        sizeof(Cilent_Mod*) * (modState->activeAddonsCount - (found + 1))
+    );
+    modState->activeAddonsCount--;
+    
+    debug_log("Mod is inactive: `%s`", mod->name);
+}
+
+const char* Cilent_ModState_Lang_Find(
+    Cilent_ModState* modState,
+    const char* mod,
+    const char* section,
+    const char* key
+)
+{
+    if (
+        modState == NULL
+        || section == NULL
+        || key == NULL
+    )
+    {
+        return NULL;
+    }
+    
+    char* modKey = mod;
+    if (modKey == NULL) {
+        modKey = modState->activeGame->name;
+    }
+    
+    Cilent_Mod* modObj = map_get(modState->map, modKey, Cilent_Mod);
+    if (
+        modObj == NULL
+        || modObj->lang == NULL
+    )
+    {
+        return NULL;
+    }
+    
+    return Cilent_Lang_Get(modObj->lang, section, key);
 }
 
 void Cilent_ModState_Destroy(Cilent_ModState modState)

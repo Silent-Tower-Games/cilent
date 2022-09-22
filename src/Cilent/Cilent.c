@@ -15,8 +15,9 @@ Cilent* Cilent_Create()
         "data/SpriteEffect.fxb",
         NULL,
         0,
-        0);
-
+        0
+    );
+    
     Cilent* cilent = malloc(sizeof(Cilent));
     cilent->sprender = sprender;
     cilent->world = NULL;
@@ -27,8 +28,8 @@ Cilent* Cilent_Create()
 void Cilent_Destroy(Cilent* cilent)
 {
     assert(cilent != NULL);
-
+    
     Sprender_Destroy(cilent->sprender);
-
+    
     free(cilent);
 }

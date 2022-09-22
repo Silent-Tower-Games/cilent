@@ -11,7 +11,7 @@
         #name \
     ); \
     if (strTemp != NULL && strTemp[0] != '\0') { \
-        snprintf(config->name, max, "%s", strTemp); \
+        snprintf(config->name, max + 1, "%s", strTemp); \
     } \
 }
 
@@ -34,9 +34,11 @@ static char Cilent_Config_LanguageIsValid(char* lang)
 {
     int i = 0;
 
-    while (lang[++i] != '\0') {
+    while (lang[++i] != '\0')
+    {
         // If we're on the 6th non-null terminating character, the string is too long
-        if (i == 5) {
+        if (i == 5)
+        {
             return 0;
         }
 
@@ -44,7 +46,9 @@ static char Cilent_Config_LanguageIsValid(char* lang)
         if (
             lang[i] != 45
             && !(lang[i] >= 97 && lang[i] <= 122)
-            && !(lang[i] >= 65 && lang[i] <= 90)) {
+            && !(lang[i] >= 65 && lang[i] <= 90)
+        )
+        {
             return 0;
         }
     }
@@ -54,7 +58,8 @@ static char Cilent_Config_LanguageIsValid(char* lang)
 
 static char* Cilent_Config_GetFilename(Cilent_Config* config)
 {
-    if (Cilent_Config_Filename[0] == '\0') {
+    if (Cilent_Config_Filename[0] == '\0')
+    {
         sprintf(
             Cilent_Config_Filename,
             "%sconfig.ini",
@@ -70,7 +75,8 @@ static char* Cilent_Config_GetFilename(Cilent_Config* config)
 
 static char Cilent_Config_Load(Cilent_Config* config, ini_t* configIni)
 {
-    if (configIni == NULL) {
+    if (configIni == NULL)
+    {
         return 0;
     }
     
@@ -102,7 +108,8 @@ static char* Cilent_Config_FileData_ModState_List(Cilent_ModState* modState)
     );
     
     int length = 0;
-    for (int i = 0; i < modState->activeAddonsCount; i++) {
+    for (int i = 0; i < modState->activeAddonsCount; i++)
+    {
         snprintf(
             &data[length],
             127 + 3 + 1,
@@ -171,7 +178,7 @@ Cilent_Config Cilent_Config_Create(Cilent_Config configDefault)
     Cilent_Config_Load(&config, configIni);
     
     // Create the mod state, which also loads all mods
-    config.modState = Cilent_ModState_Load(config.game, configIni);
+    config.modState = Cilent_ModState_Load(config.game, configIni, config.language);
     
     // After having loaded the INI file, close & free it
     ini_free(configIni);

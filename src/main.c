@@ -17,30 +17,25 @@ int main(int argc, char** argv)
     
     ecs_os_init();
     
-    SDL_Init(0);
-    
-    Cilent_Lang* lang = Cilent_Lang_Load("base", "en");
-    
-    printf(
-        "Lang `dialogue:hello:%s`: `%s`\n",
-        lang->language,
-        Cilent_Lang_Get(lang, "dialogue", "hello")
-    );
-    
-    Cilent_Lang_Destroy(lang);
-    
-    /*
+    //*
     Cilent_Config config = Cilent_Config_Create((Cilent_Config) {
-        .debug = 0,
-        .org = "Silent Tower Games",
         .app = "My Game",
+        .debug = 0,
         .language = "en",
+        .org = "Silent Tower Games",
         .game = "my-custom-mod",
     });
     
     assert(config.modState.activeGame != NULL);
     
     debug_log("Now playing `%s`", config.modState.activeGame->name);
+    
+    //*
+    debug_log(
+        "floor-is-lava:subtitle `%s`",
+        Cilent_ModState_Lang_Find(&config.modState, "floor-is-lava", "", "subtitle")
+    );
+    //*/
     
     debug_log_type(SUCCESS, "This is a success test;");
     debug_log_type(ERROR, "This is an error test.");

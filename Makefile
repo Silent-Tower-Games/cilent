@@ -13,6 +13,7 @@ lib:
 	${CC} ${CFLAGS} -c src/Cilent/Cilent.c -o src/Cilent/Cilent.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Config/Config.c -o src/Cilent/Config/Config.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Lang/Lang.c -o src/Cilent/Lang/Lang.o ${INCLUDE_PATHS} -fPIC
+	${CC} ${CFLAGS} -c src/Cilent/Misc/File.c -o src/Cilent/Misc/File.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Misc/Log.c -o src/Cilent/Misc/Log.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Mods/Mod.c -o src/Cilent/Mods/Mod.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Mods/ModState.c -o src/Cilent/Mods/ModState.o ${INCLUDE_PATHS} -fPIC
@@ -22,6 +23,7 @@ lib:
 		src/Cilent/Cilent.o \
 		src/Cilent/Config/Config.o \
 		src/Cilent/Lang/Lang.o \
+		src/Cilent/Misc/File.o \
 		src/Cilent/Misc/Log.o \
 		src/Cilent/Mods/Mod.o \
 		src/Cilent/Mods/ModState.o \
