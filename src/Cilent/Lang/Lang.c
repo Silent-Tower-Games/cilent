@@ -1,4 +1,5 @@
 #include "Lang.h"
+#include <Cilent/Flecs/Maps.h>
 #include <Cilent/Misc/Log.h>
 
 Cilent_Lang* Cilent_Lang_Load(char* mod, char* language)
@@ -45,6 +46,17 @@ Cilent_Lang* Cilent_Lang_Load(char* mod, char* language)
 
 const char* Cilent_Lang_Get(Cilent_Lang* lang, const char* section, const char* key)
 {
+    if (lang->data == NULL)
+    {
+        debug_log_type(
+            ERROR,
+            "Language not found: `%s`",
+            lang->language
+        );
+        
+        return NULL;
+    }
+    
     const char* value = ini_get(lang->data, section, key);
     
     if (value == NULL) {

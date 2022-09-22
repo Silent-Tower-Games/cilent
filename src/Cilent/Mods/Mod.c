@@ -102,10 +102,8 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     assert(path != NULL);
     
     Cilent_Mod mod;
+    memset(&mod, 0, sizeof(mod));
     snprintf(mod.name, 127, "%s", name);
-    mod.active = 0;
-    mod.isGame = 0;
-    mod.hasLang = 0;
     
     // Build config.ini file path
     char* iniFilename = "config.ini";

@@ -20,4 +20,11 @@ char Cilent_ModState_Activate(Cilent_ModState* modState, const char* modKey, con
 
 void Cilent_ModState_Deactivate(Cilent_ModState* modState, const char* modKey);
 
+const char* Cilent_ModState_Lang_Find(
+    Cilent_ModState* modState,
+    const char* mod,
+    const char* section,
+    const char* key
+);
+
 void Cilent_ModState_Destroy(Cilent_ModState modState);

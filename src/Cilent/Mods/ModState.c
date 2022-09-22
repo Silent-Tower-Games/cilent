@@ -130,6 +130,39 @@ void Cilent_ModState_Deactivate(Cilent_ModState* modState, const char* modKey)
     debug_log("Mod is inactive: `%s`", mod->name);
 }
 
+const char* Cilent_ModState_Lang_Find(
+    Cilent_ModState* modState,
+    const char* mod,
+    const char* section,
+    const char* key
+)
+{
+    if (
+        modState == NULL
+        || section == NULL
+        || key == NULL
+    )
+    {
+        return NULL;
+    }
+    
+    char* modKey = mod;
+    if (modKey == NULL) {
+        modKey = modState->activeGame->name;
+    }
+    
+    Cilent_Mod* modObj = map_get(modState->map, modKey, Cilent_Mod);
+    if (
+        modObj == NULL
+        || modObj->lang == NULL
+    )
+    {
+        return NULL;
+    }
+    
+    return Cilent_Lang_Get(modObj->lang, section, key);
+}
+
 void Cilent_ModState_Destroy(Cilent_ModState modState)
 {
     ecs_map_free(modState.map);
