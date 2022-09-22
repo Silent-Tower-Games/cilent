@@ -121,15 +121,11 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
         && mod.isGame
     );
     
-    debug_log("%s isGame: %d", mod.name, mod.isGame);
-    
     // Set whether or not this mod needs a language file
     mod.hasLang = (
         ini_sget(mod.ini, "project", "lang", "%d", &mod.hasLang)
         && mod.hasLang
     );
-    
-    debug_log("%s hasLang: %d", mod.name, mod.hasLang);
     
     return mod;
 }

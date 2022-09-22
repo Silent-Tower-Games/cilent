@@ -30,7 +30,6 @@ Cilent_Lang* Cilent_Lang_Load(char* mod, char* language)
         language
     );
     
-    debug_log("%s", filename);
     lang->data = ini_load(filename);
     free(filename);
     

@@ -33,7 +33,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
     }
     
     assert(modState.activeGame != NULL);
-    assert(Cilent_ModState_Activate(&modState, modState.activeGame->name, language));
+    assert(Cilent_ModState_Mod_Activate(&modState, modState.activeGame->name, language));
     
     modState.activeAddons = malloc(sizeof(Cilent_Mod*) * modState.addonsCount);
     modState.activeAddonsCount = 0;
@@ -47,7 +47,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
             continue;
         }
         
-        Cilent_ModState_Activate(&modState, modState.addons[i].name, language);
+        Cilent_ModState_Mod_Activate(&modState, modState.addons[i].name, language);
     }
     
     snprintf(
@@ -60,7 +60,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
     return modState;
 }
 
-char Cilent_ModState_Activate(Cilent_ModState* modState, const char* modKey, const char* language)
+char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey, const char* language)
 {
     assert(modKey != NULL);
     assert(language != NULL);
@@ -95,7 +95,7 @@ char Cilent_ModState_Activate(Cilent_ModState* modState, const char* modKey, con
     return 1;
 }
 
-void Cilent_ModState_Deactivate(Cilent_ModState* modState, const char* modKey)
+void Cilent_ModState_Mod_Deactivate(Cilent_ModState* modState, const char* modKey)
 {
     assert(modKey != NULL);
     assert(modState->activeAddonsCount > 0);
