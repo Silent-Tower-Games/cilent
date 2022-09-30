@@ -49,7 +49,8 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
     // The relative path to a mod should probably not be longer than this
     const int pathLength = 1024;
     char* path = malloc(sizeof(char) * pathLength);
-    while (listLength--) {
+    while (listLength-- > 0)
+    {
         // Skip . and .. as they are not real directories
         if (
             strcmp(list[listLength]->d_name, ".") == 0
@@ -127,7 +128,63 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
         && mod.hasLang
     );
     
+    Cilent_Mod_LoadAssets_Textures(&mod);
+    
     return mod;
+}
+
+void Cilent_Mod_LoadAssets_Textures(Cilent_Mod* mod)
+{
+    CILENT_ASSERT(mod != NULL);
+    
+    printf("Loading textures for mod %s...\n", mod->name);
+    
+    // Get texture directory
+    const char* directoryFmt = "data/%s/textures";
+    const size_t directoryLength = (
+        strlen(directoryFmt)
+        + strlen(mod->name)
+        - 2 // replacements
+        + 1 // null terminator
+    );
+    char* directory = malloc(
+        sizeof(char) * directoryLength
+    );
+    snprintf(directory, directoryLength, directoryFmt, mod->name);
+    
+    printf("Directory %s...\n", directory);
+    
+    // Set up all of the directory searching stuff
+    // This also gets us the highest possible mod count in listLength
+    // It's probably always gonna be 2 more than the highest possible, actually
+    struct dirent** list;
+    int listLength;
+    listLength = scandir(directory, &list, NULL, alphasort);
+    
+    int result;
+    while (listLength-- > 0)
+    {
+        printf("Texture: %s\n", list[listLength]->d_name);
+        
+        if (
+            !ini_sget(
+                mod->ini,
+                "textures",
+                list[listLength]->d_name,
+                "%d",
+                &result
+            )
+            || !result
+        )
+        {
+            printf("Not loading %s\n", list[listLength]->d_name);
+            continue;
+        }
+        
+        printf("!!! Loading %s\n", list[listLength]->d_name);
+    }
+    
+    free(directory);
 }
 
 void Cilent_Mod_Step(Cilent_Mod* mod)
