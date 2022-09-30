@@ -1,10 +1,5 @@
 #pragma once
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <flecs.h>
-#include <Cilent/Misc/Assert.h>
 #include "../../vendor/ini-master/src/ini.h"
 
 typedef struct Cilent_Lang
