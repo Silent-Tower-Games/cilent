@@ -1,4 +1,9 @@
 #include "Lang.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <flecs.h>
+#include <Cilent/Misc/Assert.h>
 #include <Cilent/Flecs/Maps.h>
 #include <Cilent/Misc/Log.h>
 
