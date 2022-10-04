@@ -128,8 +128,6 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
         && mod.hasLang
     );
     
-    Cilent_Mod_LoadAssets_Textures(&mod);
-    
     return mod;
 }
 
@@ -164,26 +162,30 @@ void Cilent_Mod_LoadAssets_Textures(Cilent_Mod* mod)
     int result;
     while (listLength-- > 0)
     {
-        printf("Texture: %s\n", list[listLength]->d_name);
+        const char* filename = list[listLength]->d_name;
+        printf("Texture: %s\n", filename);
         
         if (
-            !ini_sget(
+            strcmp(".", filename) == 0
+            || strcmp("..", filename) == 0
+            || !ini_sget(
                 mod->ini,
                 "textures",
-                list[listLength]->d_name,
+                filename,
                 "%d",
                 &result
             )
             || !result
         )
         {
-            printf("Not loading %s\n", list[listLength]->d_name);
+            printf("Not loading %s\n", filename);
             continue;
         }
         
-        printf("!!! Loading %s\n", list[listLength]->d_name);
+        printf("!!! Loading %s\n", filename);
     }
     
+    free(list);
     free(directory);
 }
 
@@ -198,6 +200,8 @@ void Cilent_Mod_Step(Cilent_Mod* mod)
 void Cilent_Mod_Destroy(Cilent_Mod* mod)
 {
     CILENT_ASSERT(mod != NULL);
+    
+    Cilent_AssetManager_Destroy(mod->assetManager);
     
     free(mod->iniFilename);
     ini_free(mod->ini);

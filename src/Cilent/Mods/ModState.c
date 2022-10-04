@@ -90,6 +90,15 @@ char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey,
         modState->activeAddonsCount++;
     }
     
+    mod->assetManager = Cilent_AssetManager_Create();
+    Cilent_AssetManager_Load(
+        mod->assetManager,
+        mod->ini,
+        mod->name,
+        "textures",
+        Cilent_AssetManager_Load_Texture
+    );
+    
     debug_log("Mod is active: `%s`", mod->name);
     
     return 1;
