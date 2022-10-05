@@ -3,28 +3,36 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <Cilent/global.h>
 #include <Cilent/Misc/Assert.h>
+#include <Cilent/Flecs/Maps.h>
 
 Cilent_AssetManager* Cilent_AssetManager_Create()
 {
     Cilent_AssetManager* assetManager = malloc(sizeof(Cilent_AssetManager));
     memset(assetManager, 0, sizeof(Cilent_AssetManager));
     
+    assetManager->textures = (Cilent_AssetManager_Type){
+        .count = 0,
+        .list = NULL,
+        .map = NULL,
+        .size = sizeof(Sprender_Texture),
+        .type = "textures"
+    };
+    
     return assetManager;
 }
 
 void Cilent_AssetManager_Load(
-    Cilent_AssetManager* assetManager,
+    Cilent_AssetManager_Type* assets,
     ini_t* modData,
     const char* modName,
-    const char* assetType,
-    void (*callable)(void*)
+    void (*callable)(const char*, const char*, void*, ecs_map_t*)
 )
 {
-    CILENT_ASSERT(assetManager != NULL);
+    CILENT_ASSERT(assets != NULL);
     CILENT_ASSERT(modData != NULL);
     CILENT_ASSERT(modName != NULL);
-    CILENT_ASSERT(assetType != NULL);
     CILENT_ASSERT(callable != NULL);
     
     // Get texture directory
@@ -32,14 +40,14 @@ void Cilent_AssetManager_Load(
     const size_t directoryLength = (
         strlen(directoryFmt)
         + strlen(modName)
-        + strlen(assetType)
+        + strlen(assets->type)
         - 4 // replacements
         + 1 // null terminator
     );
     char* directory = malloc(
         sizeof(char) * directoryLength
     );
-    snprintf(directory, directoryLength, directoryFmt, modName, assetType);
+    snprintf(directory, directoryLength, directoryFmt, modName, assets->type);
     
     {
         FILE* directoryExists = fopen(directory, "r");
@@ -55,14 +63,39 @@ void Cilent_AssetManager_Load(
     int listLength;
     listLength = scandir(directory, &list, NULL, alphasort);
     
-    printf("Mod `%s` list `%s` length: %d\n", modName, assetType, listLength);
+    printf("Mod `%s` list `%s` length: %d\n", modName, assets->type, listLength);
+    
+    assets->count = listLength;
+    assets->list = malloc(sizeof(assets->size) * listLength);
+    assets->map = ecs_map_new(Sprender_Texture, listLength);
     
     // TODO: make this recursive to include assets within directories
     int result;
+    int countSoFar = 0;
+    char* filepath = NULL;
     while (listLength-- > 0)
     {
         const char* filename = list[listLength]->d_name;
         printf("Asset: %s\n", filename);
+        
+        // FIXME: freeing & reallocating probably mega-sucks for performance
+        // This could be a realloc if I put the time into it, but I've spent
+        // too much of my life on this lol it needs to get operational before
+        // it gets optimized
+        if (filepath != NULL)
+        {
+            free(filepath);
+        }
+        
+        filepath = malloc(
+            sizeof(char) * (
+                directoryLength
+                + strlen(filename)
+                + 1 // slash joining character
+                + 1 // null terminator
+            )
+        );
+        sprintf(filepath, "%s/%s", directory, filename);
         
         if (
             strcmp(".", filename) == 0
@@ -75,7 +108,7 @@ void Cilent_AssetManager_Load(
         if (
             !ini_sget(
                 modData,
-                assetType,
+                assets->type,
                 filename,
                 "%d",
                 &result
@@ -88,7 +121,19 @@ void Cilent_AssetManager_Load(
         }
         
         printf("!!! Loading %s\n", filename);
+        
+        callable(
+            filepath,
+            filename,
+            &(assets->list[countSoFar * assets->size]),
+            assets->map
+        );
+        
+        countSoFar++;
     }
+    
+    // TODO: add textures to map
+    // TODO: resize array & map?
     
     free(list);
     free(directory);
@@ -96,10 +141,23 @@ void Cilent_AssetManager_Load(
 
 void Cilent_AssetManager_Load_Texture(
     const char* filename,
-    Sprender_Texture* texture
+    const char* key,
+    void* ptr,
+    ecs_map_t* map
 )
 {
-    // TODO
+    Sprender_Texture* texture = (Sprender_Texture*)ptr;
+    
+    printf("Loading texture at `%s`\n", filename);
+    
+    *texture = Sprender_Texture_Load(
+        cilent->sprender->fna3d.device,
+        filename
+    );
+    
+    map_set(map, key, texture);
+    
+    printf("Added to map: `%s`\n", key);
 }
 
 void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)

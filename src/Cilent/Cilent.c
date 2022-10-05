@@ -1,4 +1,5 @@
 #include "Cilent.h"
+#include <Cilent/global.h>
 #include <Cilent/Misc/Assert.h>
 
 char* Cilent_HelloWorld()
@@ -6,7 +7,7 @@ char* Cilent_HelloWorld()
     return "Hello, World!";
 }
 
-Cilent* Cilent_Create()
+Cilent* Cilent_Create(Cilent_Config config)
 {
     Sprender* sprender = Sprender_Create(
         "Test",
@@ -18,9 +19,11 @@ Cilent* Cilent_Create()
         0
     );
     
-    Cilent* cilent = malloc(sizeof(Cilent));
+    cilent = malloc(sizeof(Cilent));
     cilent->sprender = sprender;
     cilent->world = NULL;
+    
+    cilent->config = Cilent_Config_Create(config);
 
     return cilent;
 }

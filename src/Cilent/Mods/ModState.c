@@ -92,10 +92,9 @@ char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey,
     
     mod->assetManager = Cilent_AssetManager_Create();
     Cilent_AssetManager_Load(
-        mod->assetManager,
+        &mod->assetManager->textures,
         mod->ini,
         mod->name,
-        "textures",
         Cilent_AssetManager_Load_Texture
     );
     

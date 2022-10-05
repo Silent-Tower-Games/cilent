@@ -40,10 +40,11 @@ clean:
 
 .PHONY=valgrind
 valgrind:
-	valgrind --leak-check=full ./main 2> valgrind.txt
+	valgrind --leak-check=full ./bin/linux-gcc-64/Debug/main 2> valgrind.txt
 
 .PHONY=apitrace
 apitrace:
+	cd ./bin/linux-gcc-64/Debug
 	apitrace trace ./main
 	qapitrace main.trace
 	rm main.trace
