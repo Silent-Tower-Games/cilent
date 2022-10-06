@@ -33,9 +33,14 @@ int main(int argc, char** argv)
         SPRENDER_SPRITEBATCH_INDEXBUFFER_PREBUILD // use an index buffer
     );
     
+    Cilent_Mod* mod = map_get(
+        cilent->config.modState.map,
+        "floor-is-lava",
+        Cilent_Mod
+    );
     Sprender_Shader* shader = map_get(
-        cilent->config.modState.activeGame->assetManager->shaders.map,
-        "YellowShader.fxb",
+        mod->assetManager->shaders.map,
+        "RedShader.fxb",
         Sprender_Shader
     );
     Sprender_Load(
@@ -66,7 +71,7 @@ int main(int argc, char** argv)
     Sprender_RenderSprites(cilent->sprender, spriteBatch);
     Sprender_Close(cilent->sprender);
     
-    SDL_Delay(500);
+    SDL_Delay(5000);
     
     Sprender_SpriteBatch_Destroy(spriteBatch);
     Cilent_Destroy(cilent);
