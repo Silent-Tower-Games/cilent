@@ -13,18 +13,6 @@
 #include <flecs.h>
 #include <stdio.h>
 
-int yellowShaderStep_Ticker = 50;
-char yellowShaderStep(void* ptr)
-{
-    Sprender_Shader* shader = (Sprender_Shader*)ptr;
-    
-    float magnitude = fabs(sin((float)(++yellowShaderStep_Ticker) / 100));
-    
-    Sprender_Shader_ParamCopy(shader, "magnitude", &magnitude, sizeof(float));
-    
-    return 1;
-}
-
 int main(int argc, char** argv)
 {
     debug_log("%s", Cilent_HelloWorld());
@@ -50,7 +38,6 @@ int main(int argc, char** argv)
         "YellowShader.fxb",
         Sprender_Shader
     );
-    shader->callable = yellowShaderStep;
     Sprender_Load(
         cilent->sprender,
         NULL,
