@@ -1,5 +1,7 @@
 #define _DEFAULT_SOURCE
 #include <Cilent/Cilent.h>
+#define CILENT_GLOBAL_FINAL
+#include <Cilent/global.h>
 #include <Cilent/Config/Config.h>
 #include <Cilent/Flecs/Maps.h>
 #include <Cilent/Lang/Lang.h>
@@ -17,50 +19,64 @@ int main(int argc, char** argv)
     
     ecs_os_init();
     
-    //*
-    Cilent_Config config = Cilent_Config_Create((Cilent_Config) {
+    cilent = Cilent_Create((Cilent_Config) {
         .app = "My Game",
         .debug = 0,
         .language = "en",
         .org = "Silent Tower Games",
-        .game = "my-custom-mod",
+        .game = "base",
     });
     
-    CILENT_ASSERT(config.modState.activeGame != NULL);
-    
-    debug_log("Now playing `%s`", config.modState.activeGame->name);
-    
-    //*
-    debug_log(
-        "floor-is-lava:subtitle `%s`",
-        Cilent_ModState_Lang_Find(&config.modState, "floor-is-lava", "", "subtitle")
+    Sprender_SpriteBatch* spriteBatch = Sprender_SpriteBatch_Create(
+        cilent->sprender->fna3d.device,
+        10000, // 10k
+        SPRENDER_SPRITEBATCH_INDEXBUFFER_PREBUILD // use an index buffer
     );
-    //*/
     
-    Cilent_Log_ToFile(1);
-    debug_log_type(SUCCESS, "This is a success test;");
-    debug_log_type(ERROR, "This is an error test.");
-    Cilent_Log_ToFile(0);
-    debug_log_type(INFO, "This is an info test!");
+    Cilent_Mod* mod = map_get(
+        cilent->config.modState.map,
+        "floor-is-lava",
+        Cilent_Mod
+    );
+    Sprender_Shader* shader = map_get(
+        mod->assetManager->shaders.map,
+        "RedShader.fxb",
+        Sprender_Shader
+    );
+    Sprender_Load(
+        cilent->sprender,
+        NULL,
+        shader,
+        1
+    );
+    Sprender_Texture* texture = map_get(
+        cilent->config.modState.activeGame->assetManager->textures.map,
+        "easter-16x16.png",
+        Sprender_Texture
+    );
+    Sprender_SpriteBatch_Begin(
+        spriteBatch,
+        texture
+    );
+    Sprender_SpriteBatch_StageFrame(
+        spriteBatch,
+        (Sprender_Int2D){ .X = 0, .Y = 0 },
+        (Sprender_Float2D){ .X = 0, .Y = 0 },
+        (Sprender_Float2D){ .X = 1, .Y = 1 },
+        0.0f,
+        0,
+        0xFFFFFFFF
+    );
+    Sprender_SpriteBatch_End(spriteBatch);
+    Sprender_RenderSprites(cilent->sprender, spriteBatch);
+    Sprender_Close(cilent->sprender);
     
-    // End game
-    Cilent_Config_Save(&config);
-    Cilent_Config_Destroy(&config);
+    SDL_Delay(5000);
     
-    debug_log("Goodbye, World!");
-    
-    SDL_Quit();
-    
-    return 0;
-    //*/
-    
-    /*
-    Cilent* cilent = Cilent_Create();
-    
-    SDL_Delay(1000);
-    
+    Sprender_SpriteBatch_Destroy(spriteBatch);
     Cilent_Destroy(cilent);
     
+    debug_log("Goodbye, world!");
+    
     return 0;
-    //*/
 }

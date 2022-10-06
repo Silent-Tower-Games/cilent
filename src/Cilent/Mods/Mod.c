@@ -49,7 +49,8 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
     // The relative path to a mod should probably not be longer than this
     const int pathLength = 1024;
     char* path = malloc(sizeof(char) * pathLength);
-    while (listLength--) {
+    while (listLength-- > 0)
+    {
         // Skip . and .. as they are not real directories
         if (
             strcmp(list[listLength]->d_name, ".") == 0
@@ -59,7 +60,13 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
         }
         
         if (snprintf(path, pathLength, "%s/%s", directory, list[listLength]->d_name) >= pathLength) {
-            debug_log("Path name too long (limit: %d characters)! `%s/%s`", pathLength - 1, directory, list[listLength]->d_name);
+            debug_log_type(
+                ERROR,
+                "Path name too long (limit: %d characters)! `%s/%s`",
+                pathLength - 1,
+                directory,
+                list[listLength]->d_name
+            );
             continue;
         }
         
@@ -141,6 +148,8 @@ void Cilent_Mod_Step(Cilent_Mod* mod)
 void Cilent_Mod_Destroy(Cilent_Mod* mod)
 {
     CILENT_ASSERT(mod != NULL);
+    
+    Cilent_AssetManager_Destroy(mod->assetManager);
     
     free(mod->iniFilename);
     ini_free(mod->ini);

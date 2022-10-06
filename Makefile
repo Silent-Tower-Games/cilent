@@ -1,16 +1,16 @@
-CC=gcc
-CFLAGS=-g -pedantic
-INCLUDE_PATHS=${PATH_FLECS_INCLUDE} ${PATH_CILENT_INCLUDE} ${PATH_SPRENDER_INCLUDE} ${PATH_FNA3D_INCLUDE} ${PATH_LUA_INCLUDE} ${PATH_SDL2_INCLUDE}
-LIBRARY_PATHS=${PATH_FLECS_LIB} ${PATH_CILENT_LIB} ${PATH_SPRENDER_LIB} ${PATH_FNA3D_LIB} ${PATH_LUA_LIB} ${PATH_SDL2_LIB}
+CC?=gcc
+CFLAGS?=-g -pedantic
+INCLUDE_PATHS?=${PATH_FLECS_INCLUDE} ${PATH_CILENT_INCLUDE} ${PATH_SPRENDER_INCLUDE} ${PATH_FNA3D_INCLUDE} ${PATH_LUA_INCLUDE} ${PATH_SDL2_INCLUDE}
+LIBRARY_PATHS?=${PATH_FLECS_LIB} ${PATH_CILENT_LIB} ${PATH_SPRENDER_LIB} ${PATH_FNA3D_LIB} ${PATH_LUA_LIB} ${PATH_SDL2_LIB}
 
 .PHONY=build
-build:
-	make lib
+build: lib
 	${CC} ${CFLAGS} -c src/main.c -o src/main.o ${INCLUDE_PATHS}
 	${CC} ${CFLAGS} src/main.o -o bin/${PLATFORM}/${BUILD}/main -lflecs -lcilent -lsprender -lFNA3D -llua54 -lm ${LIBRARY_PATHS} -Wl,-rpath=./libs/
 
 lib:
 	${CC} ${CFLAGS} -c src/Cilent/Cilent.c -o src/Cilent/Cilent.o ${INCLUDE_PATHS} -fPIC
+	${CC} ${CFLAGS} -c src/Cilent/Assets/AssetManager.c -o src/Cilent/Assets/AssetManager.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Config/Config.c -o src/Cilent/Config/Config.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Lang/Lang.c -o src/Cilent/Lang/Lang.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Misc/File.c -o src/Cilent/Misc/File.o ${INCLUDE_PATHS} -fPIC
@@ -21,6 +21,7 @@ lib:
 	${CC} ${CFLAGS} -c src/vendor/ini-master/src/ini.c -o src/vendor/ini-master/src/ini.o -fPIC
 	${CC} ${CFLAGS} \
 		src/Cilent/Cilent.o \
+		src/Cilent/Assets/AssetManager.o \
 		src/Cilent/Config/Config.o \
 		src/Cilent/Lang/Lang.o \
 		src/Cilent/Misc/File.o \
@@ -35,15 +36,20 @@ lib:
 
 .PHONY=clean
 clean:
-	rm -f src/*.o
-	rm -f src/**/*.o
+	find . -type f -name '*.o' -delete
 
+# TODO: this doesn't work anymore
 .PHONY=valgrind
 valgrind:
-	valgrind --leak-check=full ./main 2> valgrind.txt
+	valgrind --leak-check=full ./bin/linux-gcc-64/Debug/main 2> valgrind.txt
 
+# TODO: this doesn't work anymore
 .PHONY=apitrace
 apitrace:
 	apitrace trace ./main
 	qapitrace main.trace
 	rm main.trace
+
+.PHONY=shaders
+shaders:
+	./build-shaders.sh
