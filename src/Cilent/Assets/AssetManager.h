@@ -16,6 +16,7 @@ typedef struct Cilent_AssetManager_Type
 
 typedef struct Cilent_AssetManager
 {
+    Cilent_AssetManager_Type shaders;
     Cilent_AssetManager_Type textures;
 } Cilent_AssetManager;
 
@@ -26,6 +27,13 @@ void Cilent_AssetManager_Load(
     ini_t* modData,
     const char* modName,
     void (*callable)(const char*, const char*, void*, ecs_map_t*)
+);
+
+void Cilent_AssetManager_Load_Shader(
+    const char* filename,
+    const char* key,
+    void* ptr,
+    ecs_map_t* map
 );
 
 void Cilent_AssetManager_Load_Texture(

@@ -13,6 +13,18 @@
 #include <flecs.h>
 #include <stdio.h>
 
+int yellowShaderStep_Ticker = 50;
+char yellowShaderStep(void* ptr)
+{
+    Sprender_Shader* shader = (Sprender_Shader*)ptr;
+    
+    float magnitude = fabs(sin((float)(++yellowShaderStep_Ticker) / 100));
+    
+    Sprender_Shader_ParamCopy(shader, "magnitude", &magnitude, sizeof(float));
+    
+    return 1;
+}
+
 int main(int argc, char** argv)
 {
     debug_log("%s", Cilent_HelloWorld());
@@ -24,7 +36,7 @@ int main(int argc, char** argv)
         .debug = 0,
         .language = "en",
         .org = "Silent Tower Games",
-        .game = "my-custom-mod",
+        .game = "base",
     });
     
     Sprender_SpriteBatch* spriteBatch = Sprender_SpriteBatch_Create(
@@ -33,11 +45,17 @@ int main(int argc, char** argv)
         SPRENDER_SPRITEBATCH_INDEXBUFFER_PREBUILD // use an index buffer
     );
     
+    Sprender_Shader* shader = map_get(
+        cilent->config.modState.activeGame->assetManager->shaders.map,
+        "YellowShader.fxb",
+        Sprender_Shader
+    );
+    shader->callable = yellowShaderStep;
     Sprender_Load(
         cilent->sprender,
         NULL,
-        NULL,
-        0
+        shader,
+        1
     );
     Sprender_Texture* texture = map_get(
         cilent->config.modState.activeGame->assetManager->textures.map,
@@ -61,7 +79,7 @@ int main(int argc, char** argv)
     Sprender_RenderSprites(cilent->sprender, spriteBatch);
     Sprender_Close(cilent->sprender);
     
-    SDL_Delay(10000);
+    SDL_Delay(500);
     
     Sprender_SpriteBatch_Destroy(spriteBatch);
     Cilent_Destroy(cilent);

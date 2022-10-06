@@ -12,13 +12,13 @@ Cilent_AssetManager* Cilent_AssetManager_Create()
     Cilent_AssetManager* assetManager = malloc(sizeof(Cilent_AssetManager));
     memset(assetManager, 0, sizeof(Cilent_AssetManager));
     
-    assetManager->textures = (Cilent_AssetManager_Type){
-        .count = 0,
-        .list = NULL,
-        .map = NULL,
-        .size = sizeof(Sprender_Texture),
-        .type = "textures"
-    };
+    assetManager->shaders.map = ecs_map_new(Sprender_Shader, 0);
+    assetManager->shaders.size = sizeof(Sprender_Shader);
+    assetManager->shaders.type = "shaders";
+    
+    assetManager->textures.map = ecs_map_new(Sprender_Texture, 0);
+    assetManager->textures.size = sizeof(Sprender_Texture);
+    assetManager->textures.type = "textures";
     
     return assetManager;
 }
@@ -67,7 +67,7 @@ void Cilent_AssetManager_Load(
     
     assets->count = listLength;
     assets->list = malloc(sizeof(assets->size) * listLength);
-    assets->map = ecs_map_new(Sprender_Texture, listLength);
+    ecs_map_set_size(assets->map, listLength);
     
     // TODO: make this recursive to include assets within directories
     int result;
@@ -137,6 +137,28 @@ void Cilent_AssetManager_Load(
     
     free(list);
     free(directory);
+}
+
+void Cilent_AssetManager_Load_Shader(
+    const char* filename,
+    const char* key,
+    void* ptr,
+    ecs_map_t* map
+)
+{
+    Sprender_Shader* shader = (Sprender_Shader*)ptr;
+    
+    printf("Loading shader at `%s`\n", filename);
+    
+    *shader = Sprender_Shader_Load(
+        cilent->sprender->fna3d.device,
+        filename,
+        NULL
+    );
+    
+    map_set(map, key, shader);
+    
+    printf("Added to map: `%s`\n", key);
 }
 
 void Cilent_AssetManager_Load_Texture(
