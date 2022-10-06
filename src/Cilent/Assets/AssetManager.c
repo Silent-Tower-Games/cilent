@@ -63,8 +63,6 @@ void Cilent_AssetManager_Load(
     int listLength;
     listLength = scandir(directory, &list, NULL, alphasort);
     
-    printf("Mod `%s` list `%s` length: %d\n", modName, assets->type, listLength);
-    
     assets->count = listLength;
     assets->list = malloc(sizeof(assets->size) * listLength);
     ecs_map_set_size(assets->map, listLength);
@@ -76,7 +74,6 @@ void Cilent_AssetManager_Load(
     while (listLength-- > 0)
     {
         const char* filename = list[listLength]->d_name;
-        printf("Asset: %s\n", filename);
         
         // FIXME: freeing & reallocating probably mega-sucks for performance
         // This could be a realloc if I put the time into it, but I've spent
@@ -116,11 +113,8 @@ void Cilent_AssetManager_Load(
             || !result
         )
         {
-            printf("Not loading %s\n", filename);
             continue;
         }
-        
-        printf("!!! Loading %s\n", filename);
         
         callable(
             filepath,
@@ -148,8 +142,6 @@ void Cilent_AssetManager_Load_Shader(
 {
     Sprender_Shader* shader = (Sprender_Shader*)ptr;
     
-    printf("Loading shader at `%s`\n", filename);
-    
     *shader = Sprender_Shader_Load(
         cilent->sprender->fna3d.device,
         filename,
@@ -158,7 +150,7 @@ void Cilent_AssetManager_Load_Shader(
     
     map_set(map, key, shader);
     
-    printf("Added to map: `%s`\n", key);
+    debug_log("Loaded shader `%s`", key);
 }
 
 void Cilent_AssetManager_Load_Texture(
@@ -170,8 +162,6 @@ void Cilent_AssetManager_Load_Texture(
 {
     Sprender_Texture* texture = (Sprender_Texture*)ptr;
     
-    printf("Loading texture at `%s`\n", filename);
-    
     *texture = Sprender_Texture_Load(
         cilent->sprender->fna3d.device,
         filename
@@ -179,7 +169,7 @@ void Cilent_AssetManager_Load_Texture(
     
     map_set(map, key, texture);
     
-    printf("Added to map: `%s`\n", key);
+    debug_log("Loaded texture `%s`", key);
 }
 
 void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)

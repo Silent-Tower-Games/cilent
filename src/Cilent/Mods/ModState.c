@@ -27,7 +27,11 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
     modState.activeGame = map_get(modState.map, activeGame, Cilent_Mod);
     
     if (modState.activeGame == NULL || !modState.activeGame->isGame) {
-        debug_log("Could not load mod `%s`!", activeGame);
+        debug_log_type(
+            ERROR,
+            "Could not load mod `%s`!",
+            activeGame
+        );
         
         modState.activeGame = map_get(modState.map, "base", Cilent_Mod);
     }
@@ -77,7 +81,12 @@ char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey,
         mod->lang = Cilent_Lang_Load(modKey, language);
         
         if (mod->lang == NULL) {
-            debug_log("Mod not activated: `%s`; missing language file: `%s`", mod->name, language);
+            debug_log_type(
+                ERROR,
+                "Mod not activated: `%s`; missing language file: `%s`",
+                mod->name,
+                language
+            );
             
             return 0;
         }
@@ -92,16 +101,16 @@ char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey,
     
     mod->assetManager = Cilent_AssetManager_Create();
     Cilent_AssetManager_Load(
-        &mod->assetManager->textures,
-        mod->ini,
-        mod->name,
-        Cilent_AssetManager_Load_Texture
-    );
-    Cilent_AssetManager_Load(
         &mod->assetManager->shaders,
         mod->ini,
         mod->name,
         Cilent_AssetManager_Load_Shader
+    );
+    Cilent_AssetManager_Load(
+        &mod->assetManager->textures,
+        mod->ini,
+        mod->name,
+        Cilent_AssetManager_Load_Texture
     );
     
     debug_log("Mod is active: `%s`", mod->name);

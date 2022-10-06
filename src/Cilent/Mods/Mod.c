@@ -60,7 +60,13 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
         }
         
         if (snprintf(path, pathLength, "%s/%s", directory, list[listLength]->d_name) >= pathLength) {
-            debug_log("Path name too long (limit: %d characters)! `%s/%s`", pathLength - 1, directory, list[listLength]->d_name);
+            debug_log_type(
+                ERROR,
+                "Path name too long (limit: %d characters)! `%s/%s`",
+                pathLength - 1,
+                directory,
+                list[listLength]->d_name
+            );
             continue;
         }
         
