@@ -131,64 +131,6 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     return mod;
 }
 
-void Cilent_Mod_LoadAssets_Textures(Cilent_Mod* mod)
-{
-    CILENT_ASSERT(mod != NULL);
-    
-    printf("Loading textures for mod %s...\n", mod->name);
-    
-    // Get texture directory
-    const char* directoryFmt = "data/%s/textures";
-    const size_t directoryLength = (
-        strlen(directoryFmt)
-        + strlen(mod->name)
-        - 2 // replacements
-        + 1 // null terminator
-    );
-    char* directory = malloc(
-        sizeof(char) * directoryLength
-    );
-    snprintf(directory, directoryLength, directoryFmt, mod->name);
-    
-    printf("Directory %s...\n", directory);
-    
-    // Set up all of the directory searching stuff
-    // This also gets us the highest possible mod count in listLength
-    // It's probably always gonna be 2 more than the highest possible, actually
-    struct dirent** list;
-    int listLength;
-    listLength = scandir(directory, &list, NULL, alphasort);
-    
-    int result;
-    while (listLength-- > 0)
-    {
-        const char* filename = list[listLength]->d_name;
-        printf("Texture: %s\n", filename);
-        
-        if (
-            strcmp(".", filename) == 0
-            || strcmp("..", filename) == 0
-            || !ini_sget(
-                mod->ini,
-                "textures",
-                filename,
-                "%d",
-                &result
-            )
-            || !result
-        )
-        {
-            printf("Not loading %s\n", filename);
-            continue;
-        }
-        
-        printf("!!! Loading %s\n", filename);
-    }
-    
-    free(list);
-    free(directory);
-}
-
 void Cilent_Mod_Step(Cilent_Mod* mod)
 {
     // I don't know what this is going to look like yet
