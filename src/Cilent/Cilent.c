@@ -18,7 +18,8 @@ Cilent* Cilent_Create(
         (Sprender_Int2D) { 320, 180 },
         "data/SpriteEffect.fxb",
         NULL,
-        0,
+        // TODO: make vsync a config setting
+        1,
         0
     );
     
@@ -29,8 +30,8 @@ Cilent* Cilent_Create(
     cilent->config = Cilent_Config_Create(config);
     
     cilent->loop = FPSLoop_Create(
-        // TODO: add this to config
-        FPSLOOP_TYPE_SLEEPSMART,
+        // TODO: make loop type a config setting
+        FPSLOOP_TYPE_NOTHING,
         // Always 60?
         60,
         // TODO: create loop callable
