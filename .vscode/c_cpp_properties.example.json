@@ -5,12 +5,14 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/usr/include",
-                "/home/swan/Programming/Projects/cilent/src",
-                "/home/swan/Programming/Projects/stg-sprender/src",
-                "/home/swan/Programming/Libraries/Debug/FNA3D/include",
-                "/home/swan/Programming/Libraries/Debug/FNA3D/MojoShader",
-                "/home/swan/Programming/Libraries/Debug/flecs-master/include",
-                "/home/swan/Programming/Libraries/Debug/lua-5.4.2/include"
+                "/home/swan/Projects/Libraries/Debug/cilent/src",
+                "/home/swan/Projects/Libraries/Debug/fpsloop/src",
+                "/home/swan/Projects/Libraries/Debug/stg-input/src",
+                "/home/swan/Projects/Libraries/Debug/stg-sprender/src",
+                "/home/swan/Projects/Libraries/Debug/FNA3D/include",
+                "/home/swan/Projects/Libraries/Debug/FNA3D/MojoShader",
+                "/home/swan/Projects/Libraries/Debug/flecs/include",
+                "/home/swan/Projects/Libraries/Debug/lua-5.4.4/src"
             ],
             "cStandard": "c99"
         }

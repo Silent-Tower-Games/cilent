@@ -20,6 +20,12 @@
                     "PATH_CILENT_INCLUDE": "-I/home/swan/Programming/Projects/cilent/src",
                     "PATH_CILENT_LIB": "-L/home/swan/Programming/Projects/cilent",
                     
+                    "PATH_FPSLOOP_INCLUDE": "-I/home/swan/Programming/Projects/fpsloop/src",
+                    "PATH_FPSLOOP_LIB": "-L/home/swan/Programming/Projects/fpsloop",
+                    
+                    "PATH_INPUT_INCLUDE": "-I/home/swan/Programming/Projects/stg-input/src",
+                    "PATH_INPUT_LIB": "-L/home/swan/Programming/Projects/stg-input",
+                    
                     "PATH_SPRENDER_INCLUDE": "-I/home/swan/Programming/Projects/stg-sprender/src",
                     "PATH_SPRENDER_LIB": "-L/home/swan/Programming/Projects/stg-sprender",
                     

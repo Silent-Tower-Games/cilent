@@ -4,10 +4,10 @@
 #include "Config.h"
 #include "../../vendor/ini-master/src/ini.h"
 
-#define CILENT_CONFIG_LOAD_STRING(name, max) { \
+#define CILENT_CONFIG_LOAD_STRING(header, name, max) { \
     const char* strTemp = ini_get( \
         configIni, \
-        "", \
+        header, \
         #name \
     ); \
     if (strTemp != NULL && strTemp[0] != '\0') { \
@@ -15,11 +15,11 @@
     } \
 }
 
-#define CILENT_CONFIG_LOAD_INT(name) { \
+#define CILENT_CONFIG_LOAD_INT(header, name) { \
     int intTemp; \
     if (ini_sget( \
         configIni, \
-        "", \
+        header, \
         #name, \
         "%d", \
         &intTemp \
@@ -80,9 +80,11 @@ static char Cilent_Config_Load(Cilent_Config* config, ini_t* configIni)
         return 0;
     }
     
-    CILENT_CONFIG_LOAD_STRING(language, 5);
-    CILENT_CONFIG_LOAD_INT(debug);
-    CILENT_CONFIG_LOAD_STRING(game, 127);
+    CILENT_CONFIG_LOAD_STRING("", language, 5);
+    CILENT_CONFIG_LOAD_INT("", debug);
+    CILENT_CONFIG_LOAD_INT("display", vsync);
+    CILENT_CONFIG_LOAD_INT("display", loopType);
+    CILENT_CONFIG_LOAD_STRING("", game, 127);
     
     return 1;
 }
@@ -137,6 +139,10 @@ static char* Cilent_Config_FileData(Cilent_Config* config)
         "debug=%d\n"
         "game=%s\n"
         "\n"
+        "[display]\n"
+        "vsync=%d\n"
+        "loopType=%d\n"
+        "\n"
         "[addons]\n"
         "%s\n"
         "[testing]\n"
@@ -145,20 +151,30 @@ static char* Cilent_Config_FileData(Cilent_Config* config)
     char* data = malloc(
         sizeof(char) * (
             (strlen(fmt) + 1) // format string
-            - 8 // format standins
+            - 12 // format standins
             + 5 // language
             + 1 // debug
             + strlen(config->game) // game
             + strlen(modStateList) // addons
+            + 1 // vsync
+            + 1 // loop type
             + 1 // null terminator
         )
     );
+    
+    int loopType = config->loopType;
+    if (loopType < 0 || loopType > 9) {
+        loopType = 0;
+    }
+    
     sprintf(
         data,
         fmt,
         config->language,
         config->debug ? 1 : 0, // only 0 or 1
         config->game,
+        config->vsync ? 1 : 0, // only 0 or 1
+        loopType,
         modStateList
     );
     free(modStateList);
