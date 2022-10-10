@@ -110,6 +110,8 @@ int main(int argc, char** argv)
             .language = "en",
             .org = "Silent Tower Games",
             .game = "base",
+            .loopType = FPSLOOP_TYPE_NOTHING,
+            .vsync = 1,
         },
         gameLoop
     );

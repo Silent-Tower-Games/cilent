@@ -8,6 +8,8 @@ typedef struct Cilent_Config {
     char language[6];
     char org[1024];
     char game[128];
+    char loopType;
+    char vsync;
     Cilent_ModState modState;
 } Cilent_Config;
 
