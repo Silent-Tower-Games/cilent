@@ -7,7 +7,10 @@ char* Cilent_HelloWorld()
     return "Hello, World!";
 }
 
-Cilent* Cilent_Create(Cilent_Config config)
+Cilent* Cilent_Create(
+    Cilent_Config config,
+    int (*frame)()
+)
 {
     Sprender* sprender = Sprender_Create(
         "Test",
@@ -24,8 +27,25 @@ Cilent* Cilent_Create(Cilent_Config config)
     cilent->world = NULL;
     
     cilent->config = Cilent_Config_Create(config);
+    
+    cilent->loop = FPSLoop_Create(
+        // TODO: add this to config
+        FPSLOOP_TYPE_SLEEPSMART,
+        // Always 60?
+        60,
+        // TODO: create loop callable
+        frame
+    );
 
     return cilent;
+}
+
+void Cilent_Loop(Cilent* cilent)
+{
+    CILENT_ASSERT(cilent != NULL);
+    CILENT_ASSERT(cilent->loop != NULL);
+    
+    FPSLoop_Run(cilent->loop);
 }
 
 void Cilent_Destroy(Cilent* cilent)
