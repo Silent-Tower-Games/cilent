@@ -13,7 +13,9 @@ Cilent* Cilent_Create(
 )
 {
     cilent = malloc(sizeof(Cilent));
-    cilent->world = NULL;
+    
+    ecs_os_init();
+    cilent->world = ecs_init();
     
     // TODO: allow custom window size
     Sprender_Int2D windowSize = { .X = 640, .Y = 360 };
@@ -68,6 +70,8 @@ void Cilent_Destroy(Cilent* cilent)
 {
     CILENT_ASSERT(cilent != NULL);
     CILENT_ASSERT(cilent->sprender != NULL);
+    
+    ecs_fini(cilent->world);
     
     Cilent_Config_Save(&cilent->config);
     Cilent_Config_Destroy(&cilent->config);

@@ -34,7 +34,7 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
     
     // Set up the map that we will return
     // Give it the largest possible size, and we'll resize it later
-    ecs_map_t* map = ecs_map_new(Cilent_Mod, listLength);
+    ecs_map_t* map = ecs_map_new(Cilent_Mod, NULL, listLength);
     
     // Initialize both of these at the highest possible length
     // We'll realloc later to free any unused memory
