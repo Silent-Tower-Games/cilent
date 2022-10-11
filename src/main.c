@@ -2,6 +2,7 @@
 #include <Cilent/Cilent.h>
 #define CILENT_GLOBAL_FINAL
 #include <Cilent/global.h>
+#include <Cilent/Assets/Sound.h>
 #include <Cilent/Config/Config.h>
 #include <Cilent/Flecs/Maps.h>
 #include <Cilent/Lang/Lang.h>
@@ -19,12 +20,15 @@
 Cilent_Mod* mod;
 Sprender_Shader* shader;
 char shaderEnabled = 0;
+Cilent_Sound* sound;
 Sprender_SpriteBatch* spriteBatch;
 Sprender_Texture* texture;
 Sprender_Float2D position = { .X = 0, .Y = 0 };
+unsigned int soundInstance = 0;
 
 int Cilent_Game_Loop();
 void EnableShaderSystem();
+void PlaySoundSystem();
 void MoveSystem();
 void DrawSystem();
 
@@ -69,6 +73,11 @@ int main(int argc, char** argv)
         "RedShader.fxb",
         Sprender_Shader
     );
+    sound = map_get(
+        cilent->config.modState.activeGame->assetManager->sounds.map,
+        "fifth-demo.ogg",
+        Cilent_Sound
+    );
     texture = map_get(
         cilent->config.modState.activeGame->assetManager->textures.map,
         "easter-16x16.png",
@@ -79,6 +88,7 @@ int main(int argc, char** argv)
     
     ECS_COMPONENT_DEFINE(cilent->world, LittleGuy);
     ECS_SYSTEM(cilent->world, EnableShaderSystem, EcsOnUpdate);
+    ECS_SYSTEM(cilent->world, PlaySoundSystem, EcsOnUpdate);
     ECS_SYSTEM(cilent->world, MoveSystem, EcsOnUpdate, LittleGuy);
     ECS_SYSTEM(cilent->world, DrawSystem, EcsOnUpdate, LittleGuy);
     
@@ -137,6 +147,17 @@ void EnableShaderSystem()
     if (keyboard(Pressed, a)) {
         shaderEnabled = !shaderEnabled;
     }
+}
+
+void PlaySoundSystem()
+{
+    if (sound == NULL || !keyboard(Pressed, s)) {
+        return;
+    }
+    
+    Soloud_stop(cilent->soloud, soundInstance);
+    
+    soundInstance = Soloud_play(cilent->soloud, sound->ptr);
 }
 
 void MoveSystem(const ecs_iter_t* it)

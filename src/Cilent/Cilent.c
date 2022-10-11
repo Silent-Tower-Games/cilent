@@ -18,6 +18,7 @@ Cilent* Cilent_Create(
     cilent->world = ecs_init();
     
     cilent->soloud = Soloud_create();
+    Soloud_init(cilent->soloud);
     
     // TODO: allow custom window size
     Sprender_Int2D windowSize = { .X = 640, .Y = 360 };
