@@ -62,7 +62,7 @@ int main(int argc, char** argv)
         "floor-is-lava",
         Cilent_Mod
     );
-    shader = mod == NULL || mod->assetManager == NULL ? NULL : map_get(
+    shader = mod == NULL || mod->assetManager == NULL || 1 ? NULL : map_get(
         mod->assetManager->shaders.map,
         "RedShader.fxb",
         Sprender_Shader
