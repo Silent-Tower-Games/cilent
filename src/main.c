@@ -18,11 +18,13 @@
 
 Cilent_Mod* mod;
 Sprender_Shader* shader;
+char shaderEnabled = 0;
 Sprender_SpriteBatch* spriteBatch;
 Sprender_Texture* texture;
 Sprender_Float2D position = { .X = 0, .Y = 0 };
 
 int Cilent_Game_Loop();
+void EnableShaderSystem();
 void MoveSystem();
 void DrawSystem();
 
@@ -62,7 +64,7 @@ int main(int argc, char** argv)
         "floor-is-lava",
         Cilent_Mod
     );
-    shader = mod == NULL || mod->assetManager == NULL || 1 ? NULL : map_get(
+    shader = mod == NULL || mod->assetManager == NULL ? NULL : map_get(
         mod->assetManager->shaders.map,
         "RedShader.fxb",
         Sprender_Shader
@@ -76,6 +78,7 @@ int main(int argc, char** argv)
     texture->tilesize.Y = 16;
     
     ECS_COMPONENT_DEFINE(cilent->world, LittleGuy);
+    ECS_SYSTEM(cilent->world, EnableShaderSystem, EcsOnUpdate);
     ECS_SYSTEM(cilent->world, MoveSystem, EcsOnUpdate, LittleGuy);
     ECS_SYSTEM(cilent->world, DrawSystem, EcsOnUpdate, LittleGuy);
     
@@ -129,6 +132,13 @@ int Cilent_Game_Loop()
     return quit;
 }
 
+void EnableShaderSystem()
+{
+    if (keyboard(Pressed, a)) {
+        shaderEnabled = !shaderEnabled;
+    }
+}
+
 void MoveSystem(const ecs_iter_t* it)
 {
     LittleGuy* littleGuy = ecs_field(it, LittleGuy, 1);
@@ -165,7 +175,7 @@ void DrawSystem(const ecs_iter_t* it)
         cilent->sprender,
         NULL,
         shader,
-        shader == NULL ? 0 : 1
+        shader == NULL || !shaderEnabled ? 0 : 1
     );
     Sprender_SpriteBatch_Begin(
         spriteBatch,
