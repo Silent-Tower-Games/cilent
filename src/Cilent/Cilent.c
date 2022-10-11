@@ -17,6 +17,8 @@ Cilent* Cilent_Create(
     ecs_os_init();
     cilent->world = ecs_init();
     
+    cilent->soloud = Soloud_create();
+    
     // TODO: allow custom window size
     Sprender_Int2D windowSize = { .X = 640, .Y = 360 };
     // TODO: resolution should be set game-by-game
@@ -70,8 +72,12 @@ void Cilent_Destroy(Cilent* cilent)
 {
     CILENT_ASSERT(cilent != NULL);
     CILENT_ASSERT(cilent->sprender != NULL);
+    CILENT_ASSERT(cilent->soloud != NULL);
+    CILENT_ASSERT(cilent->world != NULL);
     
     ecs_fini(cilent->world);
+    
+    Soloud_destroy(cilent->soloud);
     
     Cilent_Config_Save(&cilent->config);
     Cilent_Config_Destroy(&cilent->config);
