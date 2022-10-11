@@ -23,7 +23,8 @@ Sprender_Texture* texture;
 Sprender_Float2D position = { .X = 0, .Y = 0 };
 
 int Cilent_Game_Loop();
-void gameStuff();
+void MoveSystem();
+void DrawSystem();
 
 int main(int argc, char** argv)
 {
@@ -59,8 +60,14 @@ int main(int argc, char** argv)
         "RedShader.fxb",
         Sprender_Shader
     );
+    texture = map_get(
+        cilent->config.modState.activeGame->assetManager->textures.map,
+        "easter-16x16.png",
+        Sprender_Texture
+    );
     
-    ECS_SYSTEM(cilent->world, gameStuff, EcsOnUpdate);
+    ECS_SYSTEM(cilent->world, MoveSystem, EcsOnUpdate);
+    ECS_SYSTEM(cilent->world, DrawSystem, EcsOnUpdate);
     
     Cilent_Loop(cilent);
     
@@ -91,7 +98,6 @@ int Cilent_Game_Loop()
     
     inputPreframe();
     
-    // gameStuff();
     ecs_progress(cilent->world, 0);
     
     inputPostframe();
@@ -99,7 +105,7 @@ int Cilent_Game_Loop()
     return quit;
 }
 
-void gameStuff()
+void MoveSystem()
 {
     const float speed = 1.0f;
     
@@ -118,17 +124,15 @@ void gameStuff()
     if (keyboard(Down, UP)) {
         position.Y -= speed;
     }
-    
+}
+
+void DrawSystem()
+{
     Sprender_Load(
         cilent->sprender,
         NULL,
         shader,
         1
-    );
-    texture = map_get(
-        cilent->config.modState.activeGame->assetManager->textures.map,
-        "easter-16x16.png",
-        Sprender_Texture
     );
     Sprender_SpriteBatch_Begin(
         spriteBatch,
