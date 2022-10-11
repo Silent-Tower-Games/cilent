@@ -26,11 +26,18 @@ int Cilent_Game_Loop();
 void MoveSystem();
 void DrawSystem();
 
+typedef struct LittleGuy
+{
+    char player;
+    Sprender_Int2D frame;
+    Sprender_Float2D position;
+} LittleGuy;
+
+ECS_COMPONENT_DECLARE(LittleGuy);
+
 int main(int argc, char** argv)
 {
     debug_log("%s", Cilent_HelloWorld());
-    
-    ecs_os_init();
     
     cilent = Cilent_Create(
         (Cilent_Config) {
@@ -55,7 +62,7 @@ int main(int argc, char** argv)
         "floor-is-lava",
         Cilent_Mod
     );
-    shader = map_get(
+    shader = mod == NULL || mod->assetManager == NULL ? NULL : map_get(
         mod->assetManager->shaders.map,
         "RedShader.fxb",
         Sprender_Shader
@@ -65,9 +72,26 @@ int main(int argc, char** argv)
         "easter-16x16.png",
         Sprender_Texture
     );
+    texture->tilesize.X = 16;
+    texture->tilesize.Y = 16;
     
-    ECS_SYSTEM(cilent->world, MoveSystem, EcsOnUpdate);
-    ECS_SYSTEM(cilent->world, DrawSystem, EcsOnUpdate);
+    ECS_COMPONENT_DEFINE(cilent->world, LittleGuy);
+    ECS_SYSTEM(cilent->world, MoveSystem, EcsOnUpdate, LittleGuy);
+    ECS_SYSTEM(cilent->world, DrawSystem, EcsOnUpdate, LittleGuy);
+    
+    ecs_entity_t player = ecs_new_id(cilent->world);
+    ecs_set(cilent->world, player, LittleGuy, {
+        .player = 1,
+        .frame = { .X = 5, .Y = 0 },
+        .position = { .X = 0, .Y = 0 },
+    });
+    
+    ecs_entity_t enemy = ecs_new_id(cilent->world);
+    ecs_set(cilent->world, enemy, LittleGuy, {
+        .player = 0,
+        .frame = { .X = 0, .Y = 0 },
+        .position = { .X = 32, .Y = 16 },
+    });
     
     Cilent_Loop(cilent);
     
@@ -105,48 +129,61 @@ int Cilent_Game_Loop()
     return quit;
 }
 
-void MoveSystem()
+void MoveSystem(const ecs_iter_t* it)
 {
+    LittleGuy* littleGuy = ecs_field(it, LittleGuy, 1);
     const float speed = 1.0f;
     
-    if (keyboard(Down, RIGHT)) {
-        position.X += speed;
-    }
-    
-    if (keyboard(Down, LEFT)) {
-        position.X -= speed;
-    }
-    
-    if (keyboard(Down, DOWN)) {
-        position.Y += speed;
-    }
-    
-    if (keyboard(Down, UP)) {
-        position.Y -= speed;
+    for (int i = 0; i < it->count; i++) {
+        if (!littleGuy[i].player) {
+            continue;
+        }
+        
+        if (keyboard(Down, RIGHT)) {
+            littleGuy[i].position.X += speed;
+        }
+        
+        if (keyboard(Down, LEFT)) {
+            littleGuy[i].position.X -= speed;
+        }
+        
+        if (keyboard(Down, DOWN)) {
+            littleGuy[i].position.Y += speed;
+        }
+        
+        if (keyboard(Down, UP)) {
+            littleGuy[i].position.Y -= speed;
+        }
     }
 }
 
-void DrawSystem()
+void DrawSystem(const ecs_iter_t* it)
 {
+    LittleGuy* littleGuy = ecs_field(it, LittleGuy, 1);
+    
     Sprender_Load(
         cilent->sprender,
         NULL,
         shader,
-        1
+        shader == NULL ? 0 : 1
     );
     Sprender_SpriteBatch_Begin(
         spriteBatch,
         texture
     );
-    Sprender_SpriteBatch_StageFrame(
-        spriteBatch,
-        (Sprender_Int2D){ .X = 0, .Y = 0 },
-        position,
-        (Sprender_Float2D){ .X = 1, .Y = 1 },
-        0.0f,
-        0,
-        0xFFFFFFFF
-    );
+    
+    for (int i = 0; i < it->count; i++) {
+        Sprender_SpriteBatch_StageFrame(
+            spriteBatch,
+            littleGuy[i].frame,
+            littleGuy[i].position,
+            (Sprender_Float2D){ .X = 1, .Y = 1 },
+            0.0f,
+            0,
+            0xFFFFFFFF
+        );
+    }
+    
     Sprender_SpriteBatch_End(spriteBatch);
     Sprender_RenderSprites(cilent->sprender, spriteBatch);
     Sprender_Close(cilent->sprender);

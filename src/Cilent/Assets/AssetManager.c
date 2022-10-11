@@ -12,11 +12,11 @@ Cilent_AssetManager* Cilent_AssetManager_Create()
     Cilent_AssetManager* assetManager = malloc(sizeof(Cilent_AssetManager));
     memset(assetManager, 0, sizeof(Cilent_AssetManager));
     
-    assetManager->shaders.map = ecs_map_new(Sprender_Shader, 0);
+    assetManager->shaders.map = ecs_map_new(Sprender_Shader, NULL, 0);
     assetManager->shaders.size = sizeof(Sprender_Shader);
     assetManager->shaders.type = "shaders";
     
-    assetManager->textures.map = ecs_map_new(Sprender_Texture, 0);
+    assetManager->textures.map = ecs_map_new(Sprender_Texture, NULL, 0);
     assetManager->textures.size = sizeof(Sprender_Texture);
     assetManager->textures.type = "textures";
     
@@ -174,5 +174,11 @@ void Cilent_AssetManager_Load_Texture(
 
 void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)
 {
+    if (assetManager == NULL) {
+        return;
+    }
+    
+    ecs_map_fini(assetManager->shaders.map);
+    ecs_map_fini(assetManager->textures.map);
     free(assetManager);
 }

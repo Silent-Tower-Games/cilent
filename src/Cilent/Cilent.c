@@ -13,6 +13,8 @@ Cilent* Cilent_Create(
 )
 {
     cilent = malloc(sizeof(Cilent));
+    
+    ecs_os_init();
     cilent->world = ecs_init();
     
     // TODO: allow custom window size
