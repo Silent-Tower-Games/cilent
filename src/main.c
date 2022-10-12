@@ -18,13 +18,22 @@
 #include <stdio.h>
 
 Cilent_Mod* mod;
+Cilent_Mod* mod2;
 Sprender_Shader* shader;
 char shaderEnabled = 0;
 Cilent_Sound* sound;
+Cilent_Sound* sound2;
+Speech* speech;
 Sprender_SpriteBatch* spriteBatch;
 Sprender_Texture* texture;
 Sprender_Float2D position = { .X = 0, .Y = 0 };
+
+Sfxr* sfxr;
+char sfxrCooldown = 0;
 unsigned int soundInstance = 0;
+Noise* noise;
+unsigned char noiseFluctuation = 0;
+unsigned int noiseInstance = 0;
 
 int Cilent_Game_Loop();
 void EnableShaderSystem();
@@ -68,6 +77,16 @@ int main(int argc, char** argv)
         "floor-is-lava",
         Cilent_Mod
     );
+    mod2 = map_get(
+        cilent->config.modState.map,
+        "higher-jump",
+        Cilent_Mod
+    );
+    noise = Noise_create();
+    Noise_setType(noise, NOISE_BROWNISH);
+    sfxr = Sfxr_create();
+    speech = Speech_create();
+    Speech_setText(speech, "Hello World");
     shader = mod == NULL || mod->assetManager == NULL ? NULL : map_get(
         mod->assetManager->shaders.map,
         "RedShader.fxb",
@@ -76,6 +95,11 @@ int main(int argc, char** argv)
     sound = map_get(
         cilent->config.modState.activeGame->assetManager->sounds.map,
         "fifth-demo.ogg",
+        Cilent_Sound
+    );
+    sound2 = map_get(
+        mod2->assetManager->sounds.map,
+        "healthpickup1.ogg",
         Cilent_Sound
     );
     texture = map_get(
@@ -151,13 +175,38 @@ void EnableShaderSystem()
 
 void PlaySoundSystem()
 {
-    if (sound == NULL || !keyboard(Pressed, s)) {
-        return;
+    if (sound != NULL && keyboard(Pressed, s)) {
+        Soloud_stop(cilent->soloud, soundInstance);
+        
+        soundInstance = Soloud_play(cilent->soloud, sound->ptr);
     }
     
-    Soloud_stop(cilent->soloud, soundInstance);
+    if (sound2 != NULL && keyboard(Pressed, f)) {
+        soundInstance = Soloud_play(cilent->soloud, sound2->ptr);
+    }
     
-    soundInstance = Soloud_play(cilent->soloud, sound->ptr);
+    if (sfxrCooldown > 0) {
+        sfxrCooldown--;
+    }
+    if (sfxr != NULL && sfxrCooldown <= 0 && keyboard(Down, d)) {
+        sfxrCooldown = 10;
+        
+        Sfxr_loadPreset(sfxr, 0, rand());
+        
+        Soloud_play(cilent->soloud, sfxr);
+    }
+    
+    if (speech != NULL && keyboard(Pressed, g)) {
+        Soloud_play(cilent->soloud, speech);
+    }
+    
+    if (noise != NULL && keyboard(Pressed, n)) {
+        Soloud_stop(cilent->soloud, noiseInstance);
+        
+        noiseInstance = Soloud_play(cilent->soloud, noise);
+    }
+    noiseFluctuation++;
+    Soloud_setVolume(cilent->soloud, noiseInstance, 0.25f + (0.75f * sinf(noiseFluctuation / 10)));
 }
 
 void MoveSystem(const ecs_iter_t* it)
