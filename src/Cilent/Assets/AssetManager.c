@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <Cilent/global.h>
+#include <Cilent/Assets/Sound.h>
 #include <Cilent/Misc/Assert.h>
 #include <Cilent/Flecs/Maps.h>
 
@@ -15,6 +16,10 @@ Cilent_AssetManager* Cilent_AssetManager_Create()
     assetManager->shaders.map = ecs_map_new(Sprender_Shader, NULL, 0);
     assetManager->shaders.size = sizeof(Sprender_Shader);
     assetManager->shaders.type = "shaders";
+    
+    assetManager->sounds.map = ecs_map_new(Cilent_Sound, NULL, 0);
+    assetManager->sounds.size = sizeof(Cilent_Sound);
+    assetManager->sounds.type = "sounds";
     
     assetManager->textures.map = ecs_map_new(Sprender_Texture, NULL, 0);
     assetManager->textures.size = sizeof(Sprender_Texture);
@@ -126,7 +131,6 @@ void Cilent_AssetManager_Load(
         countSoFar++;
     }
     
-    // TODO: add textures to map
     // TODO: resize array & map?
     
     free(list);
@@ -153,6 +157,24 @@ void Cilent_AssetManager_Load_Shader(
     debug_log("Loaded shader `%s`", key);
 }
 
+void Cilent_AssetManager_Load_Sound(
+    const char* filename,
+    const char* key,
+    void* ptr,
+    ecs_map_t* map
+)
+{
+    Wav* wav = Wav_create();
+    Wav_load(wav, filename);
+    
+    Cilent_Sound* sound = (Cilent_Sound*)ptr;
+    sound->ptr = wav;
+    
+    map_set(map, key, sound);
+    
+    debug_log("Loaded sound `%s`", key);
+}
+
 void Cilent_AssetManager_Load_Texture(
     const char* filename,
     const char* key,
@@ -177,6 +199,8 @@ void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)
     if (assetManager == NULL) {
         return;
     }
+    
+    // TODO: unload all of the assets
     
     ecs_map_fini(assetManager->shaders.map);
     ecs_map_fini(assetManager->textures.map);

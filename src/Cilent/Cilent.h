@@ -3,6 +3,7 @@
 #include <flecs.h>
 #include <Sprender/Sprender.h>
 #include <Cilent/Config/Config.h>
+#include <soloud_c.h>
 #include <FPSLoop.h>
 
 typedef struct Cilent {
@@ -10,6 +11,7 @@ typedef struct Cilent {
     Sprender* sprender;
     Cilent_Config config;
     FPSLoop* loop;
+    Soloud* soloud;
 } Cilent;
 
 char* Cilent_HelloWorld();

@@ -35,6 +35,9 @@
                     "PATH_LUA_INCLUDE": "-I/home/swan/Programming/Libraries/Debug/lua-5.4.2/include",
                     "PATH_LUA_LIB": "-L/home/swan/Programming/Libraries/Debug/lua-5.4.2",
                     
+                    "PATH_SOLOUD_INCLUDE": "-I/home/swan/Projects/Libraries/Debug/soloud-custom/include",
+                    "PATH_SOLOUD_LIB": "-L/home/swan/Projects/Libraries/Debug/soloud-custom/custom-build",
+                    
                     "PATH_SDL2_INCLUDE": "`sdl2-config --cflags`",
                     "PATH_SDL2_LIB": "`sdl2-config --libs`"
                 }

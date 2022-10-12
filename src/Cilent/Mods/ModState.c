@@ -107,6 +107,12 @@ char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey,
         Cilent_AssetManager_Load_Shader
     );
     Cilent_AssetManager_Load(
+        &mod->assetManager->sounds,
+        mod->ini,
+        mod->name,
+        Cilent_AssetManager_Load_Sound
+    );
+    Cilent_AssetManager_Load(
         &mod->assetManager->textures,
         mod->ini,
         mod->name,
