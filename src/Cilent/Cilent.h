@@ -12,6 +12,7 @@ typedef struct Cilent {
     Cilent_Config config;
     FPSLoop* loop;
     Soloud* soloud;
+    char focus;
 } Cilent;
 
 char* Cilent_HelloWorld();
@@ -22,5 +23,9 @@ Cilent* Cilent_Create(
 );
 
 void Cilent_Loop(Cilent* cilent);
+
+void Cilent_Event_Focus(Cilent* cilent);
+
+void Cilent_Event_Blur(Cilent* cilent);
 
 void Cilent_Destroy(Cilent* cilent);

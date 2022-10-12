@@ -152,16 +152,34 @@ int Cilent_Game_Loop()
             {
                 quit = 1;
             } break;
+            
+            case SDL_WINDOWEVENT:
+            {
+                switch (event.window.event) {
+                    case SDL_WINDOWEVENT_FOCUS_GAINED:
+                    {
+                        Cilent_Event_Focus(cilent);
+                    } break;
+                    
+                    case SDL_WINDOWEVENT_FOCUS_LOST:
+                    {
+                        Cilent_Event_Blur(cilent);
+                    } break;
+                }
+            } break;
         }
         
+        // Handling input
         inputEvent(event);
     }
     
-    inputPreframe();
-    
-    ecs_progress(cilent->world, 0);
-    
-    inputPostframe();
+    if (cilent->focus) {
+        inputPreframe();
+        
+        ecs_progress(cilent->world, 0);
+        
+        inputPostframe();
+    }
     
     return quit;
 }
@@ -216,6 +234,7 @@ void MoveSystem(const ecs_iter_t* it)
     
     for (int i = 0; i < it->count; i++) {
         if (!littleGuy[i].player) {
+            littleGuy[i].position.X += speed;
             continue;
         }
         

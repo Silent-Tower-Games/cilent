@@ -14,6 +14,8 @@ Cilent* Cilent_Create(
 {
     cilent = malloc(sizeof(Cilent));
     
+    cilent->focus = 1;
+    
     ecs_os_init();
     cilent->world = ecs_init();
     
@@ -67,6 +69,26 @@ void Cilent_Loop(Cilent* cilent)
     CILENT_ASSERT(cilent->loop != NULL);
     
     FPSLoop_Run(cilent->loop);
+}
+
+void Cilent_Event_Focus(Cilent* cilent)
+{
+    CILENT_ASSERT(cilent != NULL);
+    CILENT_ASSERT(cilent->soloud != NULL);
+    
+    Soloud_setPauseAll(cilent->soloud, 0);
+    
+    cilent->focus = 1;
+}
+
+void Cilent_Event_Blur(Cilent* cilent)
+{
+    CILENT_ASSERT(cilent != NULL);
+    CILENT_ASSERT(cilent->soloud != NULL);
+    
+    Soloud_setPauseAll(cilent->soloud, 1);
+    
+    cilent->focus = 0;
 }
 
 void Cilent_Destroy(Cilent* cilent)
