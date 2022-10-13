@@ -5,7 +5,6 @@
 
 typedef struct FontStashSprender
 {
-    Sprender* sprender;
     Sprender_Texture texture;
     Sprender_SpriteBatch* spriteBatch;
 } FontStashSprender;

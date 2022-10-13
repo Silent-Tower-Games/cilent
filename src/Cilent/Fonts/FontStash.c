@@ -1,9 +1,13 @@
 #include "FontStash.h"
+#include <Cilent/global.h>
 
 void FONS_renderDelete(void* uptr)
 {
     FontStashSprender* fonsprender = (FontStashSprender*)uptr;
-    Sprender_Texture_Destroy(fonsprender->sprender->fna3d.device, &fonsprender->texture);
+    Sprender_Texture_Destroy(
+        cilent->sprender->fna3d.device,
+        &fonsprender->texture
+    );
 }
 
 int FONS_renderCreate(void* uptr, int width, int height)
@@ -16,7 +20,7 @@ int FONS_renderCreate(void* uptr, int width, int height)
     }
     
     fonsprender->texture = Sprender_Texture_NewBlank(
-        fonsprender->sprender->fna3d.device,
+        cilent->sprender->fna3d.device,
         (FNA3D_Vec4){ 0, 0, 0, 0 },
         width,
         height,
@@ -57,7 +61,7 @@ void FONS_renderUpdate(void* uptr, int* rect, const unsigned char* data)
     
     // set texture
     FNA3D_SetTextureData2D(
-        fonsprender->sprender->fna3d.device,
+        cilent->sprender->fna3d.device,
         fonsprender->texture.asset,
         0,
         0,
@@ -109,5 +113,5 @@ void FONS_renderDraw(
     
     Sprender_SpriteBatch_End(fonsprender->spriteBatch);
     
-    Sprender_RenderSprites(fonsprender->sprender, fonsprender->spriteBatch);
+    Sprender_RenderSprites(cilent->sprender, fonsprender->spriteBatch);
 }

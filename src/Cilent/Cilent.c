@@ -54,14 +54,14 @@ Cilent* Cilent_Create(
     );
     
     // FontStash
-    FontStashSprender userPtr;
-    memset(&userPtr, 0, sizeof(userPtr));
-    userPtr.sprender = cilent->sprender;
+    memset(&cilent->fontStashSprender, 0, sizeof(FontStashSprender));
     FONSparams fonsParams = {
+        // TODO: width & height must be adjustable
+        // TODO: what about when switching languages? regenerate fontstash?
         .width = 128,
         .height = 128,
         .flags = FONS_ZERO_TOPLEFT,
-        .userPtr = &userPtr,
+        .userPtr = &cilent->fontStashSprender,
         .renderCreate = FONS_renderCreate,
         .renderResize = FONS_renderResize,
         .renderUpdate = FONS_renderUpdate,
@@ -69,6 +69,11 @@ Cilent* Cilent_Create(
         .renderDelete = FONS_renderDelete,
     };
     cilent->fons = fonsCreateInternal(&fonsParams);
+    cilent->defaultFont = fonsAddFont(
+        cilent->fons,
+        "default",
+        "data/engine/PressStart2P/PressStart2P.ttf"
+    );
     
     // Config
     cilent->config = Cilent_Config_Create(config);
@@ -118,8 +123,13 @@ void Cilent_Destroy(Cilent* cilent)
     CILENT_ASSERT(cilent->sprender != NULL);
     CILENT_ASSERT(cilent->soloud != NULL);
     CILENT_ASSERT(cilent->world != NULL);
+    CILENT_ASSERT(cilent->fons != NULL);
     
     ecs_fini(cilent->world);
+    
+    FontStashSprender* fsp = (FontStashSprender*)((FONSparams*)cilent->fons)->userPtr;
+    
+    fonsDeleteInternal(cilent->fons);
     
     Soloud_deinit(cilent->soloud);
     Soloud_destroy(cilent->soloud);

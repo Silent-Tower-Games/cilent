@@ -76,6 +76,7 @@ int main(int argc, char** argv)
         10000, // 10k
         SPRENDER_SPRITEBATCH_INDEXBUFFER_PREBUILD // use an index buffer
     );
+    cilent->fontStashSprender.spriteBatch = spriteBatch;
     mod = map_get(
         cilent->config.modState.map,
         "floor-is-lava",
@@ -113,13 +114,6 @@ int main(int argc, char** argv)
     );
     texture->tilesize.X = 16;
     texture->tilesize.Y = 16;
-    
-    // PUT SOMEWHERE ELSE
-    int fontNormal = fonsAddFont(cilent->fons, "sans", "PressStart2P.ttf");
-    fonsSetFont(cilent->fons, fontNormal);
-    fonsSetSize(cilent->fons, 8.0f);
-    fonsSetColor(cilent->fons, 0xFFFF00FF);
-    // END PUT SOMEWHERE ELSE
     
     ECS_COMPONENT_DEFINE(cilent->world, LittleGuy);
     ECS_SYSTEM(cilent->world, EnableShaderSystem, EcsOnUpdate);
@@ -309,5 +303,17 @@ void DrawSystem(const ecs_iter_t* it)
     
     Sprender_SpriteBatch_End(spriteBatch);
     Sprender_RenderSprites(cilent->sprender, spriteBatch);
+    
+    fonsSetFont(cilent->fons, cilent->defaultFont);
+    fonsSetSize(cilent->fons, 8.0f);
+    fonsSetColor(cilent->fons, 0xFFFF00FF);
+    fonsDrawText(
+        cilent->fons,
+        0,
+        0,
+        "Testing!",
+        NULL
+    );
+    
     Sprender_Close(cilent->sprender);
 }

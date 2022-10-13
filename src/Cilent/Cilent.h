@@ -15,6 +15,8 @@ typedef struct Cilent {
     Soloud* soloud;
     char focus;
     FONScontext* fons;
+    int defaultFont;
+    FontStashSprender fontStashSprender;
 } Cilent;
 
 char* Cilent_HelloWorld();
