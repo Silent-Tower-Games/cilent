@@ -315,5 +315,27 @@ void DrawSystem(const ecs_iter_t* it)
         NULL
     );
     
+    fonsSetFont(cilent->fons, fonsGetFontByName(cilent->fons, "arcade.ttf"));
+    fonsSetSize(cilent->fons, 16.0f);
+    fonsSetColor(cilent->fons, 0xFF00FFFF);
+    fonsDrawText(
+        cilent->fons,
+        -16,
+        -16,
+        "Testing!",
+        NULL
+    );
+    
+    fonsSetFont(cilent->fons, fonsGetFontByName(cilent->fons, "alagard.ttf"));
+    fonsSetSize(cilent->fons, 16.0f);
+    fonsSetColor(cilent->fons, 0xFF00FF00);
+    fonsDrawText(
+        cilent->fons,
+        16,
+        16,
+        "Testing!",
+        NULL
+    );
+    
     Sprender_Close(cilent->sprender);
 }
