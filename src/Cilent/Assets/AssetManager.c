@@ -13,6 +13,10 @@ Cilent_AssetManager* Cilent_AssetManager_Create()
     Cilent_AssetManager* assetManager = malloc(sizeof(Cilent_AssetManager));
     memset(assetManager, 0, sizeof(Cilent_AssetManager));
     
+    assetManager->fonts.map = ecs_map_new(int, NULL, 0);
+    assetManager->fonts.size = sizeof(int);
+    assetManager->fonts.type = "fonts";
+    
     assetManager->shaders.map = ecs_map_new(Sprender_Shader, NULL, 0);
     assetManager->shaders.size = sizeof(Sprender_Shader);
     assetManager->shaders.type = "shaders";
@@ -135,6 +139,26 @@ void Cilent_AssetManager_Load(
     
     free(list);
     free(directory);
+}
+
+void Cilent_AssetManager_Load_Font(
+    const char* filename,
+    const char* key,
+    void* ptr,
+    ecs_map_t* map
+)
+{
+    int* font = (int*)ptr;
+    
+    *font = fonsAddFont(
+        cilent->fons,
+        key,
+        filename
+    );
+    
+    map_set(map, key, font);
+    
+    debug_log("Loaded font `%s`", key);
 }
 
 void Cilent_AssetManager_Load_Shader(

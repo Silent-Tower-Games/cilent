@@ -16,12 +16,15 @@ Cilent* Cilent_Create(
     
     cilent->focus = 1;
     
+    // Flecs
     ecs_os_init();
     cilent->world = ecs_init();
     
+    // Soloud
     cilent->soloud = Soloud_create();
     Soloud_init(cilent->soloud);
     
+    // Sprender
     // TODO: allow custom window size
     Sprender_Int2D windowSize = { .X = 640, .Y = 360 };
     // TODO: resolution should be set game-by-game
@@ -30,21 +33,11 @@ Cilent* Cilent_Create(
         "Test",
         windowSize,
         resolution,
-        "data/SpriteEffect.fxb",
+        "data/engine/SpriteEffect.fxb",
         NULL,
         0,
         0
     );
-    
-    cilent->config = Cilent_Config_Create(config);
-    
-    cilent->loop = FPSLoop_Create(
-        cilent->config.loopType,
-        // Always 60?
-        60,
-        frame
-    );
-    
     // FIXME: having to set vsync immediately after creating sprender :(
     // This is because:
     // - sprender creates FNA3D device
@@ -58,6 +51,39 @@ Cilent* Cilent_Create(
         windowSize,
         0,
         cilent->config.vsync
+    );
+    
+    // FontStash
+    memset(&cilent->fontStashSprender, 0, sizeof(FontStashSprender));
+    FONSparams fonsParams = {
+        // TODO: width & height must be adjustable
+        // TODO: what about when switching languages? regenerate fontstash?
+        .width = 128,
+        .height = 128,
+        .flags = FONS_ZERO_TOPLEFT,
+        .userPtr = &cilent->fontStashSprender,
+        .renderCreate = FONS_renderCreate,
+        .renderResize = FONS_renderResize,
+        .renderUpdate = FONS_renderUpdate,
+        .renderDraw = FONS_renderDraw,
+        .renderDelete = FONS_renderDelete,
+    };
+    cilent->fons = fonsCreateInternal(&fonsParams);
+    cilent->defaultFont = fonsAddFont(
+        cilent->fons,
+        "default",
+        "data/engine/PressStart2P/PressStart2P.ttf"
+    );
+    
+    // Config
+    cilent->config = Cilent_Config_Create(config);
+    
+    // FPSLoop
+    cilent->loop = FPSLoop_Create(
+        cilent->config.loopType,
+        // Always 60?
+        60,
+        frame
     );
     
     return cilent;
@@ -97,8 +123,11 @@ void Cilent_Destroy(Cilent* cilent)
     CILENT_ASSERT(cilent->sprender != NULL);
     CILENT_ASSERT(cilent->soloud != NULL);
     CILENT_ASSERT(cilent->world != NULL);
+    CILENT_ASSERT(cilent->fons != NULL);
     
     ecs_fini(cilent->world);
+    
+    fonsDeleteInternal(cilent->fons);
     
     Soloud_deinit(cilent->soloud);
     Soloud_destroy(cilent->soloud);

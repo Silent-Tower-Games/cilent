@@ -14,6 +14,9 @@
 #include <STGInput/STGInput.h>
 #define STGINPUT_CONVENIENCE
 #include <STGInput/Convenience.h>
+#define FONTSTASH_IMPLEMENTATION
+#include <vendor/fontstash/fontstash.h>
+#include <Cilent/Fonts/FontStash.h>
 #include <flecs.h>
 #include <stdio.h>
 
@@ -73,6 +76,7 @@ int main(int argc, char** argv)
         10000, // 10k
         SPRENDER_SPRITEBATCH_INDEXBUFFER_PREBUILD // use an index buffer
     );
+    cilent->fontStashSprender.spriteBatch = spriteBatch;
     mod = map_get(
         cilent->config.modState.map,
         "floor-is-lava",
@@ -214,7 +218,7 @@ void PlaySoundSystem()
     );
     
     if (sound2 != NULL && keyboard(Pressed, f)) {
-        soundInstance = Soloud_play(cilent->soloud, sound2->ptr);
+        Soloud_play(cilent->soloud, sound2->ptr);
     }
     
     if (sfxrCooldown > 0) {
@@ -299,5 +303,39 @@ void DrawSystem(const ecs_iter_t* it)
     
     Sprender_SpriteBatch_End(spriteBatch);
     Sprender_RenderSprites(cilent->sprender, spriteBatch);
+    
+    fonsSetFont(cilent->fons, cilent->defaultFont);
+    fonsSetSize(cilent->fons, 8.0f);
+    fonsSetColor(cilent->fons, 0xFFFF00FF);
+    fonsDrawText(
+        cilent->fons,
+        0,
+        0,
+        "Testing!",
+        NULL
+    );
+    
+    fonsSetFont(cilent->fons, fonsGetFontByName(cilent->fons, "arcade.ttf"));
+    fonsSetSize(cilent->fons, 16.0f);
+    fonsSetColor(cilent->fons, 0xFF00FFFF);
+    fonsDrawText(
+        cilent->fons,
+        -16,
+        -16,
+        "Testing!",
+        NULL
+    );
+    
+    fonsSetFont(cilent->fons, fonsGetFontByName(cilent->fons, "alagard.ttf"));
+    fonsSetSize(cilent->fons, 16.0f);
+    fonsSetColor(cilent->fons, 0xFF00FF00);
+    fonsDrawText(
+        cilent->fons,
+        16,
+        16,
+        "Testing!",
+        NULL
+    );
+    
     Sprender_Close(cilent->sprender);
 }
