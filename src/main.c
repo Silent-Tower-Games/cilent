@@ -34,6 +34,7 @@ unsigned int soundInstance = 0;
 Noise* noise;
 unsigned char noiseFluctuation = 0;
 unsigned int noiseInstance = 0;
+char pauseSong = 0;
 
 int Cilent_Game_Loop();
 void EnableShaderSystem();
@@ -152,16 +153,34 @@ int Cilent_Game_Loop()
             {
                 quit = 1;
             } break;
+            
+            case SDL_WINDOWEVENT:
+            {
+                switch (event.window.event) {
+                    case SDL_WINDOWEVENT_FOCUS_GAINED:
+                    {
+                        Cilent_Event_Focus(cilent);
+                    } break;
+                    
+                    case SDL_WINDOWEVENT_FOCUS_LOST:
+                    {
+                        Cilent_Event_Blur(cilent);
+                    } break;
+                }
+            } break;
         }
         
+        // Handling input
         inputEvent(event);
     }
     
-    inputPreframe();
-    
-    ecs_progress(cilent->world, 0);
-    
-    inputPostframe();
+    if (cilent->focus) {
+        inputPreframe();
+        
+        ecs_progress(cilent->world, 0);
+        
+        inputPostframe();
+    }
     
     return quit;
 }
@@ -176,10 +195,23 @@ void EnableShaderSystem()
 void PlaySoundSystem()
 {
     if (sound != NULL && keyboard(Pressed, s)) {
-        Soloud_stop(cilent->soloud, soundInstance);
-        
-        soundInstance = Soloud_play(cilent->soloud, sound->ptr);
+        if (soundInstance) {
+            pauseSong = !pauseSong;
+            
+            debug_log(
+                "%f",
+                Soloud_getStreamPosition(cilent->soloud, soundInstance)
+            );
+        } else {
+            soundInstance = Soloud_play(cilent->soloud, sound->ptr);
+        }
     }
+    
+    Soloud_setPause(
+        cilent->soloud,
+        soundInstance,
+        pauseSong
+    );
     
     if (sound2 != NULL && keyboard(Pressed, f)) {
         soundInstance = Soloud_play(cilent->soloud, sound2->ptr);
@@ -216,6 +248,7 @@ void MoveSystem(const ecs_iter_t* it)
     
     for (int i = 0; i < it->count; i++) {
         if (!littleGuy[i].player) {
+            littleGuy[i].position.X += speed;
             continue;
         }
         
