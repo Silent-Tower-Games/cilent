@@ -127,8 +127,6 @@ void Cilent_Destroy(Cilent* cilent)
     
     ecs_fini(cilent->world);
     
-    FontStashSprender* fsp = (FontStashSprender*)((FONSparams*)cilent->fons)->userPtr;
-    
     fonsDeleteInternal(cilent->fons);
     
     Soloud_deinit(cilent->soloud);

@@ -17,4 +17,10 @@ int FONS_renderResize(void* uptr, int width, int height);
 
 void FONS_renderUpdate(void* uptr, int* rect, const unsigned char* data);
 
-void FONS_renderDraw(void* uptr, const float* verts, const float* tcoords, const unsigned int* colors, int nverts);
+void FONS_renderDraw(
+    void* uptr,
+    const float* verts,
+    const float* tcoords,
+    const unsigned int* colors,
+    int nverts
+);
