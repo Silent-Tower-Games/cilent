@@ -100,6 +100,7 @@ void Cilent_Destroy(Cilent* cilent)
     
     ecs_fini(cilent->world);
     
+    Soloud_deinit(cilent->soloud);
     Soloud_destroy(cilent->soloud);
     
     Cilent_Config_Save(&cilent->config);

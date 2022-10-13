@@ -194,9 +194,39 @@ void EnableShaderSystem()
 void PlaySoundSystem()
 {
     if (sound != NULL && keyboard(Pressed, s)) {
-        Soloud_stop(cilent->soloud, soundInstance);
-        
-        soundInstance = Soloud_play(cilent->soloud, sound->ptr);
+        if (soundInstance) {
+            const int isPaused = (
+                Soloud_getPause(cilent->soloud, soundInstance)
+                || (Soloud_getVolume(cilent->soloud, soundInstance) == 0.0f)
+            );
+            
+            Soloud_setPause(
+                cilent->soloud,
+                soundInstance,
+                !isPaused
+            );
+            Soloud_setVolume(
+                cilent->soloud,
+                soundInstance,
+                isPaused ? 1.0f : 0.0f
+            );
+            
+            Soloud_setInaudibleBehavior(
+                cilent->soloud,
+                soundInstance,
+                0,
+                1
+            );
+            
+            debug_log(
+                "%f",
+                Soloud_getStreamPosition(cilent->soloud, soundInstance)
+            );
+        } else {
+            // Soloud_stop(cilent->soloud, soundInstance);
+            
+            soundInstance = Soloud_play(cilent->soloud, sound->ptr);
+        }
     }
     
     if (sound2 != NULL && keyboard(Pressed, f)) {
