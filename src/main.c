@@ -34,6 +34,7 @@ unsigned int soundInstance = 0;
 Noise* noise;
 unsigned char noiseFluctuation = 0;
 unsigned int noiseInstance = 0;
+char pauseSong = 0;
 
 int Cilent_Game_Loop();
 void EnableShaderSystem();
@@ -195,39 +196,22 @@ void PlaySoundSystem()
 {
     if (sound != NULL && keyboard(Pressed, s)) {
         if (soundInstance) {
-            const int isPaused = (
-                Soloud_getPause(cilent->soloud, soundInstance)
-                || (Soloud_getVolume(cilent->soloud, soundInstance) == 0.0f)
-            );
-            
-            Soloud_setPause(
-                cilent->soloud,
-                soundInstance,
-                !isPaused
-            );
-            Soloud_setVolume(
-                cilent->soloud,
-                soundInstance,
-                isPaused ? 1.0f : 0.0f
-            );
-            
-            Soloud_setInaudibleBehavior(
-                cilent->soloud,
-                soundInstance,
-                0,
-                1
-            );
+            pauseSong = !pauseSong;
             
             debug_log(
                 "%f",
                 Soloud_getStreamPosition(cilent->soloud, soundInstance)
             );
         } else {
-            // Soloud_stop(cilent->soloud, soundInstance);
-            
             soundInstance = Soloud_play(cilent->soloud, sound->ptr);
         }
     }
+    
+    Soloud_setPause(
+        cilent->soloud,
+        soundInstance,
+        pauseSong
+    );
     
     if (sound2 != NULL && keyboard(Pressed, f)) {
         soundInstance = Soloud_play(cilent->soloud, sound2->ptr);
