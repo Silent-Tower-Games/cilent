@@ -51,10 +51,12 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
     char* path = malloc(sizeof(char) * pathLength);
     while (listLength-- > 0)
     {
-        // Skip . and .. as they are not real directories
+        // Skip `.` and `..` as they are not real directories
+        // Also skip `engine` as it will only have assets
         if (
             strcmp(list[listLength]->d_name, ".") == 0
             || strcmp(list[listLength]->d_name, "..") == 0
+            || strcmp(list[listLength]->d_name, "engine") == 0
         ) {
             continue;
         }
@@ -121,6 +123,8 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     
     // Load config.ini
     mod.ini = ini_load(mod.iniFilename);
+    
+    CILENT_ASSERT(mod.ini != NULL);
     
     // Set whether or not this is a full game mod
     mod.isGame = (

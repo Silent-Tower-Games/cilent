@@ -14,6 +14,9 @@
 #include <STGInput/STGInput.h>
 #define STGINPUT_CONVENIENCE
 #include <STGInput/Convenience.h>
+#define FONTSTASH_IMPLEMENTATION
+#include <vendor/fontstash/fontstash.h>
+#include <Cilent/Fonts/FontStash.h>
 #include <flecs.h>
 #include <stdio.h>
 
@@ -110,6 +113,13 @@ int main(int argc, char** argv)
     );
     texture->tilesize.X = 16;
     texture->tilesize.Y = 16;
+    
+    // PUT SOMEWHERE ELSE
+    int fontNormal = fonsAddFont(cilent->fons, "sans", "PressStart2P.ttf");
+    fonsSetFont(cilent->fons, fontNormal);
+    fonsSetSize(cilent->fons, 8.0f);
+    fonsSetColor(cilent->fons, 0xFFFF00FF);
+    // END PUT SOMEWHERE ELSE
     
     ECS_COMPONENT_DEFINE(cilent->world, LittleGuy);
     ECS_SYSTEM(cilent->world, EnableShaderSystem, EcsOnUpdate);
@@ -214,7 +224,7 @@ void PlaySoundSystem()
     );
     
     if (sound2 != NULL && keyboard(Pressed, f)) {
-        soundInstance = Soloud_play(cilent->soloud, sound2->ptr);
+        Soloud_play(cilent->soloud, sound2->ptr);
     }
     
     if (sfxrCooldown > 0) {

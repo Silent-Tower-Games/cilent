@@ -16,12 +16,15 @@ Cilent* Cilent_Create(
     
     cilent->focus = 1;
     
+    // Flecs
     ecs_os_init();
     cilent->world = ecs_init();
     
+    // Soloud
     cilent->soloud = Soloud_create();
     Soloud_init(cilent->soloud);
     
+    // Sprender
     // TODO: allow custom window size
     Sprender_Int2D windowSize = { .X = 640, .Y = 360 };
     // TODO: resolution should be set game-by-game
@@ -30,21 +33,11 @@ Cilent* Cilent_Create(
         "Test",
         windowSize,
         resolution,
-        "data/SpriteEffect.fxb",
+        "data/engine/SpriteEffect.fxb",
         NULL,
         0,
         0
     );
-    
-    cilent->config = Cilent_Config_Create(config);
-    
-    cilent->loop = FPSLoop_Create(
-        cilent->config.loopType,
-        // Always 60?
-        60,
-        frame
-    );
-    
     // FIXME: having to set vsync immediately after creating sprender :(
     // This is because:
     // - sprender creates FNA3D device
@@ -58,6 +51,34 @@ Cilent* Cilent_Create(
         windowSize,
         0,
         cilent->config.vsync
+    );
+    
+    // FontStash
+    FontStashSprender userPtr;
+    memset(&userPtr, 0, sizeof(userPtr));
+    userPtr.sprender = cilent->sprender;
+    FONSparams fonsParams = {
+        .width = 128,
+        .height = 128,
+        .flags = FONS_ZERO_TOPLEFT,
+        .userPtr = &userPtr,
+        .renderCreate = FONS_renderCreate,
+        .renderResize = FONS_renderResize,
+        .renderUpdate = FONS_renderUpdate,
+        .renderDraw = FONS_renderDraw,
+        .renderDelete = FONS_renderDelete,
+    };
+    cilent->fons = fonsCreateInternal(&fonsParams);
+    
+    // Config
+    cilent->config = Cilent_Config_Create(config);
+    
+    // FPSLoop
+    cilent->loop = FPSLoop_Create(
+        cilent->config.loopType,
+        // Always 60?
+        60,
+        frame
     );
     
     return cilent;

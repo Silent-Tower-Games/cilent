@@ -3,6 +3,7 @@
 #include <flecs.h>
 #include <Sprender/Sprender.h>
 #include <Cilent/Config/Config.h>
+#include <Cilent/Fonts/FontStash.h>
 #include <soloud_c.h>
 #include <FPSLoop.h>
 
@@ -13,6 +14,7 @@ typedef struct Cilent {
     FPSLoop* loop;
     Soloud* soloud;
     char focus;
+    FONScontext* fons;
 } Cilent;
 
 char* Cilent_HelloWorld();

@@ -12,6 +12,7 @@ lib:
 	${CC} ${CFLAGS} -c src/Cilent/Cilent.c -o src/Cilent/Cilent.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Assets/AssetManager.c -o src/Cilent/Assets/AssetManager.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Config/Config.c -o src/Cilent/Config/Config.o ${INCLUDE_PATHS} -fPIC
+	${CC} ${CFLAGS} -c src/Cilent/Fonts/FontStash.c -o src/Cilent/Fonts/FontStash.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Lang/Lang.c -o src/Cilent/Lang/Lang.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Misc/File.c -o src/Cilent/Misc/File.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Misc/Log.c -o src/Cilent/Misc/Log.o ${INCLUDE_PATHS} -fPIC
@@ -23,6 +24,7 @@ lib:
 		src/Cilent/Cilent.o \
 		src/Cilent/Assets/AssetManager.o \
 		src/Cilent/Config/Config.o \
+		src/Cilent/Fonts/FontStash.o \
 		src/Cilent/Lang/Lang.o \
 		src/Cilent/Misc/File.o \
 		src/Cilent/Misc/Log.o \
