@@ -7,6 +7,8 @@
 #include <soloud_c.h>
 #include <FPSLoop.h>
 
+typedef void (*Cilent_Scene)();
+
 typedef struct Cilent {
     ecs_world_t* world;
     Sprender* sprender;
@@ -17,6 +19,7 @@ typedef struct Cilent {
     FONScontext* fons;
     int defaultFont;
     FontStashSprender fontStashSprender;
+    Cilent_Scene nextScene;
 } Cilent;
 
 char* Cilent_HelloWorld();

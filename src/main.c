@@ -26,16 +26,16 @@ Sprender_Shader* shader;
 char shaderEnabled = 0;
 Cilent_Sound* sound;
 Cilent_Sound* sound2;
-Speech* speech;
 Sprender_SpriteBatch* spriteBatch;
 Sprender_Texture* texture;
 Sprender_Float2D position = { .X = 0, .Y = 0 };
 
+Speech* speech;
 Sfxr* sfxr;
 char sfxrCooldown = 0;
 unsigned int soundInstance = 0;
 Noise* noise;
-unsigned char noiseFluctuation = 0;
+unsigned int noiseFluctuation = 0;
 unsigned int noiseInstance = 0;
 char pauseSong = 0;
 
@@ -44,6 +44,8 @@ void EnableShaderSystem();
 void PlaySoundSystem();
 void MoveSystem();
 void DrawSystem();
+
+void FirstTestScene();
 
 typedef struct LittleGuy
 {
@@ -70,6 +72,7 @@ int main(int argc, char** argv)
         },
         Cilent_Game_Loop
     );
+    cilent->nextScene = FirstTestScene;
     
     spriteBatch = Sprender_SpriteBatch_Create(
         cilent->sprender->fna3d.device,
@@ -115,26 +118,6 @@ int main(int argc, char** argv)
     texture->tilesize.X = 16;
     texture->tilesize.Y = 16;
     
-    ECS_COMPONENT_DEFINE(cilent->world, LittleGuy);
-    ECS_SYSTEM(cilent->world, EnableShaderSystem, EcsOnUpdate);
-    ECS_SYSTEM(cilent->world, PlaySoundSystem, EcsOnUpdate);
-    ECS_SYSTEM(cilent->world, MoveSystem, EcsOnUpdate, LittleGuy);
-    ECS_SYSTEM(cilent->world, DrawSystem, EcsOnUpdate, LittleGuy);
-    
-    ecs_entity_t player = ecs_new_id(cilent->world);
-    ecs_set(cilent->world, player, LittleGuy, {
-        .player = 1,
-        .frame = { .X = 5, .Y = 0 },
-        .position = { .X = 0, .Y = 0 },
-    });
-    
-    ecs_entity_t enemy = ecs_new_id(cilent->world);
-    ecs_set(cilent->world, enemy, LittleGuy, {
-        .player = 0,
-        .frame = { .X = 0, .Y = 0 },
-        .position = { .X = 32, .Y = 16 },
-    });
-    
     Cilent_Loop(cilent);
     
     Sprender_SpriteBatch_Destroy(spriteBatch);
@@ -147,6 +130,28 @@ int main(int argc, char** argv)
 
 int Cilent_Game_Loop()
 {
+    if (cilent->nextScene != NULL || cilent->world == NULL)
+    {
+        if (cilent->world != NULL)
+        {
+            ecs_fini(cilent->world);
+        }
+        
+        cilent->world = ecs_init();
+        
+        ECS_COMPONENT_DEFINE(cilent->world, LittleGuy);
+        ECS_SYSTEM(cilent->world, EnableShaderSystem, EcsOnUpdate);
+        ECS_SYSTEM(cilent->world, PlaySoundSystem, EcsOnUpdate);
+        ECS_SYSTEM(cilent->world, MoveSystem, EcsOnUpdate, LittleGuy);
+        ECS_SYSTEM(cilent->world, DrawSystem, EcsOnUpdate, LittleGuy);
+        
+        if (cilent->nextScene != NULL)
+        {
+            cilent->nextScene();
+            cilent->nextScene = NULL;
+        }
+    }
+    
     SDL_Event event;
     char quit = 0;
     while(SDL_PollEvent(&event))
@@ -189,6 +194,23 @@ int Cilent_Game_Loop()
     return quit;
 }
 
+void FirstTestScene()
+{
+    ecs_entity_t player = ecs_new_id(cilent->world);
+    ecs_set(cilent->world, player, LittleGuy, {
+        .player = 1,
+        .frame = { .X = 5, .Y = 0 },
+        .position = { .X = 0, .Y = 0 },
+    });
+    
+    ecs_entity_t enemy = ecs_new_id(cilent->world);
+    ecs_set(cilent->world, enemy, LittleGuy, {
+        .player = 0,
+        .frame = { .X = 0, .Y = 0 },
+        .position = { .X = 32, .Y = 16 },
+    });
+}
+
 void EnableShaderSystem()
 {
     if (keyboard(Pressed, a)) {
@@ -227,7 +249,7 @@ void PlaySoundSystem()
     if (sfxr != NULL && sfxrCooldown <= 0 && keyboard(Down, d)) {
         sfxrCooldown = 10;
         
-        Sfxr_loadPreset(sfxr, 0, rand());
+        Sfxr_loadPreset(sfxr, SFXR_POWERUP, rand());
         
         Soloud_play(cilent->soloud, sfxr);
     }
@@ -236,13 +258,18 @@ void PlaySoundSystem()
         Soloud_play(cilent->soloud, speech);
     }
     
+    // Sounds like a train :)
     if (noise != NULL && keyboard(Pressed, n)) {
         Soloud_stop(cilent->soloud, noiseInstance);
         
         noiseInstance = Soloud_play(cilent->soloud, noise);
     }
     noiseFluctuation++;
-    Soloud_setVolume(cilent->soloud, noiseInstance, 0.25f + (0.75f * sinf(noiseFluctuation / 10)));
+    Soloud_setVolume(
+        cilent->soloud,
+        noiseInstance,
+        0.25f + (0.75f * fabs(sinf((float)noiseFluctuation / 3.0f)))
+    );
 }
 
 void MoveSystem(const ecs_iter_t* it)

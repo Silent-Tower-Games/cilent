@@ -14,11 +14,13 @@ Cilent* Cilent_Create(
 {
     cilent = malloc(sizeof(Cilent));
     
+    cilent->nextScene = NULL;
+    
     cilent->focus = 1;
     
     // Flecs
     ecs_os_init();
-    cilent->world = ecs_init();
+    cilent->world = NULL;
     
     // Soloud
     cilent->soloud = Soloud_create();
