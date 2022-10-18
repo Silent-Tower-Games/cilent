@@ -40,6 +40,8 @@ unsigned int noiseInstance = 0;
 char pauseSong = 0;
 
 int Cilent_Game_Loop();
+
+void LuaScriptSystem();
 void EnableShaderSystem();
 void PlaySoundSystem();
 void MoveSystem();
@@ -140,6 +142,7 @@ int Cilent_Game_Loop()
         cilent->world = ecs_init();
         
         ECS_COMPONENT_DEFINE(cilent->world, LittleGuy);
+        ECS_SYSTEM(cilent->world, LuaScriptSystem, EcsOnUpdate);
         ECS_SYSTEM(cilent->world, EnableShaderSystem, EcsOnUpdate);
         ECS_SYSTEM(cilent->world, PlaySoundSystem, EcsOnUpdate);
         ECS_SYSTEM(cilent->world, MoveSystem, EcsOnUpdate, LittleGuy);
@@ -209,6 +212,25 @@ void FirstTestScene()
         .frame = { .X = 0, .Y = 0 },
         .position = { .X = 32, .Y = 16 },
     });
+}
+
+void LuaScriptSystem()
+{
+    if (!keyboard(Pressed, l)) {
+        return;
+    }
+    
+    lua_getglobal(cilent->lua, "steps");
+    if(luaL_dostring(cilent->lua, "for i,v in pairs(steps) do v(); end") != LUA_OK)
+    //if(lua_pcall(cilent->lua, 0, 0, 0) != LUA_OK)
+    // for i,v in pairs(steps) do v(); end
+    {
+        debug_log_type(
+            ERROR,
+            "Lua: %s",
+            lua_tostring(cilent->lua, -1)
+        );
+    }
 }
 
 void EnableShaderSystem()

@@ -22,6 +22,11 @@ Cilent* Cilent_Create(
     ecs_os_init();
     cilent->world = NULL;
     
+    // Lua
+    cilent->lua = luaL_newstate();
+    luaL_openlibs(cilent->lua);
+    luaL_dostring(cilent->lua, "steps = {}");
+    
     // Soloud
     cilent->soloud = Soloud_create();
     Soloud_init(cilent->soloud);
@@ -128,6 +133,8 @@ void Cilent_Destroy(Cilent* cilent)
     CILENT_ASSERT(cilent->fons != NULL);
     
     ecs_fini(cilent->world);
+    
+    lua_close(cilent->lua);
     
     fonsDeleteInternal(cilent->fons);
     

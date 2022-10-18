@@ -177,6 +177,15 @@ void Cilent_AssetManager_Load_Script(
     char** script = (char**)ptr;
     
     *script = Cilent_File_Read(filename);
+    lua_getglobal(cilent->lua, "steps");
+    if (luaL_dostring(cilent->lua, *script) != LUA_OK)
+    {
+        debug_log_type(
+            ERROR,
+            "%s",
+            lua_tostring(cilent->lua, -1)
+        );
+    }
     
     map_set(map, key, script);
     

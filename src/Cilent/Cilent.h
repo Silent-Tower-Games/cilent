@@ -1,6 +1,9 @@
 #pragma once
 
 #include <flecs.h>
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 #include <Sprender/Sprender.h>
 #include <Cilent/Config/Config.h>
 #include <Cilent/Fonts/FontStash.h>
@@ -20,6 +23,7 @@ typedef struct Cilent {
     int defaultFont;
     FontStashSprender fontStashSprender;
     Cilent_Scene nextScene;
+    lua_State* lua;
 } Cilent;
 
 char* Cilent_HelloWorld();
