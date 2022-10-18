@@ -1,17 +1,23 @@
-#include <stdio.h>
 #include "File.h"
+#include <stdio.h>
+#include <Cilent/Misc/Assert.h>
+#include <SDL2/SDL.h>
 
-// TODO: is this necessary? Maybe delete this file
-
-char Cilent_File_Exists(const char* path)
+char* Cilent_File_Read(const char* filename)
 {
-    FILE* file = fopen(path, "r");
+    FILE* f = fopen(filename, "r");
+    char* data;
     
-    if (file == NULL) {
-        return 0;
-    }
+    CILENT_ASSERT(f != NULL);
     
-    fclose(file);
+    fseek(f, 0, SEEK_END);
+    uint32_t length = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    data = malloc(sizeof(char) * (length + 1));
+    fread(data, 1, length, f);
+    fclose(f);
     
-    return 1;
+    data[length] = '\0';
+    
+    return data;
 }

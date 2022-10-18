@@ -1,3 +1,3 @@
 #pragma once
 
-char Cilent_File_Exists(const char* path);
+char* Cilent_File_Read(const char* filename);

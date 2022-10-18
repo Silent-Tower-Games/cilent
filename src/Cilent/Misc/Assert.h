@@ -1,5 +1,6 @@
 #pragma once
 
+#include <assert.h>
 #include <Cilent/Misc/Assert.h>
 #include <Cilent/Misc/Log.h>
 
