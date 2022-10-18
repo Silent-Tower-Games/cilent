@@ -222,8 +222,6 @@ void LuaScriptSystem()
     
     lua_getglobal(cilent->lua, "steps");
     if(luaL_dostring(cilent->lua, "for i,v in pairs(steps) do v(); end") != LUA_OK)
-    //if(lua_pcall(cilent->lua, 0, 0, 0) != LUA_OK)
-    // for i,v in pairs(steps) do v(); end
     {
         debug_log_type(
             ERROR,
