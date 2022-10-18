@@ -17,6 +17,7 @@ typedef struct Cilent_AssetManager_Type
 typedef struct Cilent_AssetManager
 {
     Cilent_AssetManager_Type fonts;
+    Cilent_AssetManager_Type scripts;
     Cilent_AssetManager_Type shaders;
     Cilent_AssetManager_Type sounds;
     Cilent_AssetManager_Type textures;
@@ -32,6 +33,13 @@ void Cilent_AssetManager_Load(
 );
 
 void Cilent_AssetManager_Load_Font(
+    const char* filename,
+    const char* key,
+    void* ptr,
+    ecs_map_t* map
+);
+
+void Cilent_AssetManager_Load_Script(
     const char* filename,
     const char* key,
     void* ptr,

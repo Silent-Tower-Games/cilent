@@ -1,11 +1,13 @@
 #include "AssetManager.h"
 
 #include <dirent.h>
+#include <lua.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <Cilent/global.h>
 #include <Cilent/Assets/Sound.h>
 #include <Cilent/Misc/Assert.h>
+#include <Cilent/Misc/File.h>
 #include <Cilent/Flecs/Maps.h>
 
 Cilent_AssetManager* Cilent_AssetManager_Create()
@@ -16,6 +18,10 @@ Cilent_AssetManager* Cilent_AssetManager_Create()
     assetManager->fonts.map = ecs_map_new(int, NULL, 0);
     assetManager->fonts.size = sizeof(int);
     assetManager->fonts.type = "fonts";
+    
+    assetManager->scripts.map = ecs_map_new(char*, NULL, 0);
+    assetManager->scripts.size = sizeof(char*);
+    assetManager->scripts.type = "scripts";
     
     assetManager->shaders.map = ecs_map_new(Sprender_Shader, NULL, 0);
     assetManager->shaders.size = sizeof(Sprender_Shader);
@@ -159,6 +165,31 @@ void Cilent_AssetManager_Load_Font(
     map_set(map, key, font);
     
     debug_log("Loaded font `%s`", key);
+}
+
+void Cilent_AssetManager_Load_Script(
+    const char* filename,
+    const char* key,
+    void* ptr,
+    ecs_map_t* map
+)
+{
+    char** script = (char**)ptr;
+    
+    *script = Cilent_File_Read(filename);
+    lua_getglobal(cilent->lua, "steps");
+    if (luaL_dostring(cilent->lua, *script) != LUA_OK)
+    {
+        debug_log_type(
+            ERROR,
+            "%s",
+            lua_tostring(cilent->lua, -1)
+        );
+    }
+    
+    map_set(map, key, script);
+    
+    debug_log("Loaded script `%s`", key);
 }
 
 void Cilent_AssetManager_Load_Shader(
