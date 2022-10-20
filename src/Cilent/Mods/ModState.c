@@ -206,7 +206,7 @@ const char* Cilent_ModState_Lang_Find(
 
 void Cilent_ModState_Destroy(Cilent_ModState modState)
 {
-    ecs_map_fini(modState.map);
+    ecs_map_free(modState.map);
     free(modState.activeAddons);
     
     for (int i = 0; i < fmax(modState.addonsCount, modState.gamesCount); i++) {

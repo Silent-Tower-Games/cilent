@@ -68,6 +68,7 @@ void Cilent_AssetManager_Load(
         FILE* directoryExists = fopen(directory, "r");
         if (directoryExists == NULL)
         {
+            free(directory);
             // TODO: this should return something
             return;
         }
@@ -90,24 +91,29 @@ void Cilent_AssetManager_Load(
     {
         const char* filename = list[listLength]->d_name;
         
-        // FIXME: freeing & reallocating probably mega-sucks for performance
-        // This could be a realloc if I put the time into it, but I've spent
-        // too much of my life on this lol it needs to get operational before
-        // it gets optimized
         if (filepath != NULL)
         {
-            free(filepath);
+            filepath = realloc(
+                filepath,
+                sizeof(char) * (
+                    directoryLength
+                    + strlen(filename)
+                    + 1 // slash joining character
+                    + 1 // null terminator
+                )
+            );
         }
-        
-        filepath = malloc(
-            sizeof(char) * (
-                directoryLength
-                + strlen(filename)
-                + 1 // slash joining character
-                + 1 // null terminator
-            )
-        );
-        sprintf(filepath, "%s/%s", directory, filename);
+        else
+        {
+            filepath = malloc(
+                sizeof(char) * (
+                    directoryLength
+                    + strlen(filename)
+                    + 1 // slash joining character
+                    + 1 // null terminator
+                )
+            );
+        }
         
         if (
             strcmp(".", filename) == 0
@@ -116,6 +122,8 @@ void Cilent_AssetManager_Load(
         {
             continue;
         }
+        
+        sprintf(filepath, "%s/%s", directory, filename);
         
         if (
             !ini_sget(
@@ -139,6 +147,11 @@ void Cilent_AssetManager_Load(
         );
         
         countSoFar++;
+    }
+    
+    if (filepath != NULL)
+    {
+        free(filepath);
     }
     
     // TODO: resize array & map?
@@ -257,7 +270,47 @@ void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)
     
     // TODO: unload all of the assets
     
-    ecs_map_fini(assetManager->shaders.map);
-    ecs_map_fini(assetManager->textures.map);
+    // Free fonts
+    // FontStash takes care of freeing the font files
+    ecs_map_free(assetManager->fonts.map);
+    free(assetManager->fonts.list);
+    
+    // Free lua scripts
+    for (int i = 0; i < assetManager->scripts.count; i++) {
+        // Just a char*
+        free(assetManager->scripts.list[i]);
+    }
+    ecs_map_free(assetManager->scripts.map);
+    free(assetManager->scripts.list);
+    
+    // Free shaders
+    for (int i = 0; i < assetManager->shaders.count; i++) {
+        Sprender_Shader_Destroy(
+            cilent->sprender->fna3d.device,
+            (Sprender_Shader*)(&assetManager->shaders.list[i])
+        );
+    }
+    ecs_map_free(assetManager->shaders.map);
+    free(assetManager->shaders.list);
+    
+    // Free sounds
+    for (int i = 0; i < assetManager->sounds.count; i++) {
+        Wav_destroy(((Cilent_Sound*)assetManager->sounds.list[i])->ptr);
+    }
+    ecs_map_free(assetManager->sounds.map);
+    free(assetManager->sounds.list);
+    
+    // Free sounds
+    for (int i = 0; i < assetManager->textures.count; i++) {
+        // Wav_destroy(((Cilent_Sound*)assetManager->sounds.list[i])->ptr);
+        Sprender_Texture_Destroy(
+            cilent->sprender->fna3d.device,
+            (Sprender_Texture*)(&assetManager->shaders.list[i])
+        );
+    }
+    ecs_map_free(assetManager->textures.map);
+    free(assetManager->textures.list);
+    
+    // Free the asset manager itself
     free(assetManager);
 }

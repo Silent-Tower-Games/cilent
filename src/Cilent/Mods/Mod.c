@@ -91,8 +91,6 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
             
             map_set(map, mod.name, pMod);
         }
-        
-        free(list[listLength]);
     }
     free(path);
     free(list);
@@ -153,7 +151,17 @@ void Cilent_Mod_Destroy(Cilent_Mod* mod)
 {
     CILENT_ASSERT(mod != NULL);
     
+    printf("Destroy mod `%s`\n", mod->name);
+    
     Cilent_AssetManager_Destroy(mod->assetManager);
+    
+    printf("Mod has lang: %d ? %d\n", mod->hasLang, mod->lang);
+    
+    CILENT_ASSERT(mod->hasLang = (mod->lang != NULL));
+    if (mod->lang != NULL) {
+        printf("Destroy lang for mod `%s`\n", mod->name);
+        Cilent_Lang_Destroy(mod->lang);
+    }
     
     free(mod->iniFilename);
     ini_free(mod->ini);

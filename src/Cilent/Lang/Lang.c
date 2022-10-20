@@ -11,6 +11,8 @@ Cilent_Lang* Cilent_Lang_Load(const char* mod, const char* language)
 {
     CILENT_ASSERT(strnlen(language, 5) <= 5);
     
+    printf("Loading lang `%s` for `%s`\n", language, mod);
+    
     Cilent_Lang* lang = (Cilent_Lang*)malloc(sizeof(Cilent_Lang));
     
     strcpy(
@@ -40,6 +42,7 @@ Cilent_Lang* Cilent_Lang_Load(const char* mod, const char* language)
     
     if (lang->data == NULL)
     {
+        printf("Destroying...\n");
         Cilent_Lang_Destroy(lang);
         
         return NULL;
@@ -78,6 +81,8 @@ const char* Cilent_Lang_Get(Cilent_Lang* lang, const char* section, const char* 
 
 void Cilent_Lang_Destroy(Cilent_Lang* lang)
 {
+    printf("Destroying language\n");
+    
     if (lang->data != NULL)
     {
         ini_free(lang->data);

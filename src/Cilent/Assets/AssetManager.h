@@ -7,7 +7,7 @@
 
 typedef struct Cilent_AssetManager_Type
 {
-    char* list;
+    void** list;
     size_t count;
     ecs_map_t* map;
     const char* type;

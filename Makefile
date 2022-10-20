@@ -43,7 +43,7 @@ clean:
 # TODO: this doesn't work anymore
 .PHONY=valgrind
 valgrind:
-	valgrind --leak-check=full ./bin/linux-gcc-64/Debug/main 2> valgrind.txt
+	time (cd ./bin/linux-gcc-64/Debug/ && valgrind --leak-check=full --track-origins=yes ./main 2> valgrind.txt)
 
 # TODO: this doesn't work anymore
 .PHONY=apitrace
