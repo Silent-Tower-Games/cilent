@@ -23,7 +23,7 @@ Cilent_AssetManager* Cilent_AssetManager_Create()
     assetManager->scripts.size = sizeof(char*);
     assetManager->scripts.type = "scripts";
     
-    assetManager->shaders.map = map_new(Sprender_Shader, 0);
+    assetManager->shaders.map = map_new(Sprender_Shader*, 0);
     assetManager->shaders.size = sizeof(Sprender_Shader);
     assetManager->shaders.type = "shaders";
     
@@ -31,7 +31,7 @@ Cilent_AssetManager* Cilent_AssetManager_Create()
     assetManager->sounds.size = sizeof(Cilent_Sound);
     assetManager->sounds.type = "sounds";
     
-    assetManager->textures.map = map_new(Sprender_Texture, 0);
+    assetManager->textures.map = map_new(Sprender_Texture*, 0);
     assetManager->textures.size = sizeof(Sprender_Texture);
     assetManager->textures.type = "textures";
     
@@ -272,7 +272,7 @@ void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)
     
     // Free fonts
     // FontStash takes care of freeing the font files
-    ecs_map_free(assetManager->fonts.map);
+    map_free(assetManager->fonts.map);
     free(assetManager->fonts.list);
     
     // Free lua scripts
@@ -280,7 +280,7 @@ void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)
         // Just a char*
         free(assetManager->scripts.list[i]);
     }
-    ecs_map_free(assetManager->scripts.map);
+    map_free(assetManager->scripts.map);
     free(assetManager->scripts.list);
     
     // Free shaders
@@ -290,14 +290,14 @@ void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)
             (Sprender_Shader*)(&assetManager->shaders.list[i])
         );
     }
-    ecs_map_free(assetManager->shaders.map);
+    map_free(assetManager->shaders.map);
     free(assetManager->shaders.list);
     
     // Free sounds
     for (int i = 0; i < assetManager->sounds.count; i++) {
         Wav_destroy(((Cilent_Sound*)assetManager->sounds.list[i])->ptr);
     }
-    ecs_map_free(assetManager->sounds.map);
+    map_free(assetManager->sounds.map);
     free(assetManager->sounds.list);
     
     // Free sounds
@@ -308,7 +308,7 @@ void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)
             (Sprender_Texture*)(&assetManager->shaders.list[i])
         );
     }
-    ecs_map_free(assetManager->textures.map);
+    map_free(assetManager->textures.map);
     free(assetManager->textures.list);
     
     // Free the asset manager itself

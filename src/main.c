@@ -67,14 +67,14 @@ typedef struct Holder
 int main(int argc, char** argv)
 {
     //*
-    Holder** list = malloc(sizeof(Holder) * 2);
+    Holder** list = malloc(sizeof(Holder*) * 2);
     list[0] = malloc(sizeof(Holder));
     list[0]->val = 1;
     list[1] = malloc(sizeof(Holder));
     list[1]->val = 2;
     
     ecs_os_init();
-    ecs_map_t* map = map_new(Holder*, 2);
+    Cilent_Map* map = map_new(Holder*, 2);
     
     map_set(map, "one", &list[0]);
     map_set(map, "two", &list[1]);
