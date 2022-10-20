@@ -34,7 +34,7 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
     
     // Set up the map that we will return
     // Give it the largest possible size, and we'll resize it later
-    ecs_map_t* map = ecs_map_new(Cilent_Mod, NULL, listLength);
+    ecs_map_t* map = map_new(Cilent_Mod, listLength);
     
     // Initialize both of these at the highest possible length
     // We'll realloc later to free any unused memory
@@ -137,14 +137,6 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     );
     
     return mod;
-}
-
-void Cilent_Mod_Step(Cilent_Mod* mod)
-{
-    // I don't know what this is going to look like yet
-    
-    // A mod should probably not execute unless it has a language file in the
-    // currently-selected language...
 }
 
 void Cilent_Mod_Destroy(Cilent_Mod* mod)

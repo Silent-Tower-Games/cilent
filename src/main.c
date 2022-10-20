@@ -16,6 +16,7 @@
 #include <STGInput/Convenience.h>
 #define FONTSTASH_IMPLEMENTATION
 #include <vendor/fontstash/fontstash.h>
+#include <Cilent/Flecs/Maps.h>
 #include <Cilent/Fonts/FontStash.h>
 #include <flecs.h>
 #include <stdio.h>
@@ -58,8 +59,48 @@ typedef struct LittleGuy
 
 ECS_COMPONENT_DECLARE(LittleGuy);
 
+typedef struct Holder
+{
+    int val;
+} Holder;
+
 int main(int argc, char** argv)
 {
+    //*
+    Holder** list = malloc(sizeof(Holder) * 2);
+    list[0] = malloc(sizeof(Holder));
+    list[0]->val = 1;
+    list[1] = malloc(sizeof(Holder));
+    list[1]->val = 2;
+    
+    ecs_os_init();
+    ecs_map_t* map = map_new(Holder*, 2);
+    
+    map_set(map, "one", &list[0]);
+    map_set(map, "two", &list[1]);
+    
+    printf(
+        "Holders: %d %d\n",
+        (*map_get(map, "one", Holder*))->val,
+        (*map_get(map, "two", Holder*))->val
+    );
+    
+    list[0]->val = 5;
+    list[1]->val = 7;
+    
+    printf(
+        "Holders: %d %d\n",
+        (*map_get(map, "one", Holder*))->val,
+        (*map_get(map, "two", Holder*))->val
+    );
+    
+    free(list[0]);
+    free(list[1]);
+    free(list);
+    
+    return 0;
+    //*/
+    
     debug_log("%s", Cilent_HelloWorld());
     
     cilent = Cilent_Create(

@@ -15,23 +15,23 @@ Cilent_AssetManager* Cilent_AssetManager_Create()
     Cilent_AssetManager* assetManager = malloc(sizeof(Cilent_AssetManager));
     memset(assetManager, 0, sizeof(Cilent_AssetManager));
     
-    assetManager->fonts.map = ecs_map_new(int, NULL, 0);
+    assetManager->fonts.map = map_new(int, 0);
     assetManager->fonts.size = sizeof(int);
     assetManager->fonts.type = "fonts";
     
-    assetManager->scripts.map = ecs_map_new(char*, NULL, 0);
+    assetManager->scripts.map = map_new(char*, 0);
     assetManager->scripts.size = sizeof(char*);
     assetManager->scripts.type = "scripts";
     
-    assetManager->shaders.map = ecs_map_new(Sprender_Shader, NULL, 0);
+    assetManager->shaders.map = map_new(Sprender_Shader, 0);
     assetManager->shaders.size = sizeof(Sprender_Shader);
     assetManager->shaders.type = "shaders";
     
-    assetManager->sounds.map = ecs_map_new(Cilent_Sound, NULL, 0);
+    assetManager->sounds.map = map_new(Cilent_Sound, 0);
     assetManager->sounds.size = sizeof(Cilent_Sound);
     assetManager->sounds.type = "sounds";
     
-    assetManager->textures.map = ecs_map_new(Sprender_Texture, NULL, 0);
+    assetManager->textures.map = map_new(Sprender_Texture, 0);
     assetManager->textures.size = sizeof(Sprender_Texture);
     assetManager->textures.type = "textures";
     

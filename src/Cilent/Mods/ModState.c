@@ -80,6 +80,8 @@ char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey,
     {
         mod->lang = Cilent_Lang_Load(modKey, language);
         
+        printf("Mod `%s` has lang %d\n", mod->name, mod->lang);
+        
         if (mod->lang == NULL) {
             debug_log_type(
                 ERROR,
