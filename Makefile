@@ -18,7 +18,6 @@ lib:
 	${CC} ${CFLAGS} -c src/Cilent/Misc/Log.c -o src/Cilent/Misc/Log.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Mods/Mod.c -o src/Cilent/Mods/Mod.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/Cilent/Mods/ModState.c -o src/Cilent/Mods/ModState.o ${INCLUDE_PATHS} -fPIC
-	${CC} ${CFLAGS} -c src/Cilent/Flecs/Maps.c -o src/Cilent/Flecs/Maps.o ${INCLUDE_PATHS} -fPIC
 	${CC} ${CFLAGS} -c src/vendor/ini-master/src/ini.c -o src/vendor/ini-master/src/ini.o -fPIC
 	${CC} ${CFLAGS} \
 		src/Cilent/Cilent.o \
@@ -30,7 +29,6 @@ lib:
 		src/Cilent/Misc/Log.o \
 		src/Cilent/Mods/Mod.o \
 		src/Cilent/Mods/ModState.o \
-		src/Cilent/Flecs/Maps.o \
 		src/vendor/ini-master/src/ini.o \
 		-shared -o libcilent.${EXT} \
 	${LIBRARY_PATHS}

@@ -8,8 +8,8 @@
 typedef struct Cilent_AssetManager_Type
 {
     void** list;
+    char** names;
     size_t count;
-    ecs_map_t* map;
     const char* type;
     size_t size;
 } Cilent_AssetManager_Type;
@@ -29,42 +29,42 @@ void Cilent_AssetManager_Load(
     Cilent_AssetManager_Type* assets,
     ini_t* modData,
     const char* modName,
-    void (*callable)(const char*, const char*, void*, ecs_map_t*)
+    void (*callable)(const char*, const char*, void*)
 );
 
 void Cilent_AssetManager_Load_Font(
     const char* filename,
     const char* key,
-    void* ptr,
-    ecs_map_t* map
+    void* ptr
 );
 
 void Cilent_AssetManager_Load_Script(
     const char* filename,
     const char* key,
-    void* ptr,
-    ecs_map_t* map
+    void* ptr
 );
 
 void Cilent_AssetManager_Load_Shader(
     const char* filename,
     const char* key,
-    void* ptr,
-    ecs_map_t* map
+    void* ptr
 );
 
 void Cilent_AssetManager_Load_Sound(
     const char* filename,
     const char* key,
-    void* ptr,
-    ecs_map_t* map
+    void* ptr
 );
 
 void Cilent_AssetManager_Load_Texture(
     const char* filename,
     const char* key,
-    void* ptr,
-    ecs_map_t* map
+    void* ptr
+);
+
+void* Cilent_AssetManagerType_FindByKey(
+    Cilent_AssetManager_Type* assetManagerType,
+    const char* key
 );
 
 void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager);

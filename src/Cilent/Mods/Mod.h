@@ -17,7 +17,7 @@ typedef struct Cilent_Mod {
     Cilent_AssetManager* assetManager;
 } Cilent_Mod;
 
-ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** modsGame, int* pModsGameCount, Cilent_Mod** modsMod, int* pModsModCount);
+void Cilent_Mod_FindAll(Cilent_Mod** modsGame, int* pModsGameCount, Cilent_Mod** modsMod, int* pModsModCount);
 
 Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path);
 
