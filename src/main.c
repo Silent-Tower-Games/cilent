@@ -117,6 +117,7 @@ int main(int argc, char** argv)
     Cilent_Loop(cilent);
     
     Sprender_SpriteBatch_Destroy(spriteBatch);
+    Cilent* _cilent = cilent;
     Cilent_Destroy(cilent);
     
     debug_log("Goodbye, world!");
@@ -346,12 +347,40 @@ void DrawSystem(const ecs_iter_t* it)
     Sprender_RenderSprites(cilent->sprender, spriteBatch);
     
     // Draw tilemap
+    /*
+    Sprender_SpriteBatch_Begin(
+        spriteBatch,
+        Cilent_AssetManagerType_FindByKey(
+            &cilent->config.modState.activeGame->assetManager->textures,
+            //map->tilesets[0].name.ptr
+            "8x8.png"
+        )
+    );
     cute_tiled_layer_t* layer = map->layers;
     while (layer) {
-        printf("%s\n", layer->name.ptr);
+        static int l = 0;
+        for (int x = 0; x < layer->width; x++) {
+            for (int y = 0; y < layer->height; y++) {
+                int tile = layer->data[(y * layer->width) + x];
+                
+                Sprender_SpriteBatch_StageFrame(
+                    spriteBatch,
+                    (Sprender_Int2D){ l, 0 },
+                    (Sprender_Float2D){ x * map->tilewidth, y * map->tilewidth },
+                    (Sprender_Float2D){ .X = 1, .Y = 1 },
+                    0.0f,
+                    0,
+                    0xFFFFFFFF
+                );
+            }
+        }
         
         layer = layer->next;
+        l++;
     }
+    Sprender_SpriteBatch_End(spriteBatch);
+    Sprender_RenderSprites(cilent->sprender, spriteBatch);
+    //*/
     
     // Draw text
     fonsSetFont(cilent->fons, cilent->defaultFont);
