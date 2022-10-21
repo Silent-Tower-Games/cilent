@@ -9,12 +9,11 @@
 #include <SDL2/SDL.h>
 #include <Cilent/Misc/Assert.h>
 #include <Cilent/Misc/Log.h>
-#include <Cilent/Flecs/Maps.h>
 #include "Mod.h"
 
 void Cilent_Mod_Init();
 
-ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod** pModsAddon, int* pModsAddonCount)
+void Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod** pModsAddon, int* pModsAddonCount)
 {
     // Assert these pointers actually go somewhere
     CILENT_ASSERT(pModsGame != NULL);
@@ -31,10 +30,6 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
     int listLength;
     const char* directory = "data";
     listLength = scandir(directory, &list, NULL, alphasort);
-    
-    // Set up the map that we will return
-    // Give it the largest possible size, and we'll resize it later
-    ecs_map_t* map = ecs_map_new(Cilent_Mod, NULL, listLength);
     
     // Initialize both of these at the highest possible length
     // We'll realloc later to free any unused memory
@@ -58,6 +53,7 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
             || strcmp(list[listLength]->d_name, "..") == 0
             || strcmp(list[listLength]->d_name, "engine") == 0
         ) {
+            free(list[listLength]);
             continue;
         }
         
@@ -69,6 +65,7 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
                 directory,
                 list[listLength]->d_name
             );
+            free(list[listLength]);
             continue;
         }
         
@@ -88,8 +85,6 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
             }
             
             *pMod = mod;
-            
-            map_set(map, mod.name, pMod);
         }
         
         free(list[listLength]);
@@ -99,11 +94,6 @@ ecs_map_t* Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilen
     
     *pModsGame = realloc(modsGame, sizeof(Cilent_Mod) * (*pModsGameCount));
     *pModsAddon = realloc(modsAddon, sizeof(Cilent_Mod) * (*pModsAddonCount));
-    
-    // TODO: Resize mods map down to actual size
-    // Maybe just create the map here & re-loop over the mods?
-    
-    return map;
 }
 
 Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
@@ -141,19 +131,16 @@ Cilent_Mod Cilent_Mod_CreateFromPath(char* name, char* path)
     return mod;
 }
 
-void Cilent_Mod_Step(Cilent_Mod* mod)
-{
-    // I don't know what this is going to look like yet
-    
-    // A mod should probably not execute unless it has a language file in the
-    // currently-selected language...
-}
-
 void Cilent_Mod_Destroy(Cilent_Mod* mod)
 {
     CILENT_ASSERT(mod != NULL);
     
     Cilent_AssetManager_Destroy(mod->assetManager);
+    
+    CILENT_ASSERT(mod->hasLang == (mod->lang != NULL));
+    if (mod->lang != NULL) {
+        Cilent_Lang_Destroy(mod->lang);
+    }
     
     free(mod->iniFilename);
     ini_free(mod->ini);

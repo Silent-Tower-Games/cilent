@@ -8,30 +8,24 @@
 #include <Cilent/Assets/Sound.h>
 #include <Cilent/Misc/Assert.h>
 #include <Cilent/Misc/File.h>
-#include <Cilent/Flecs/Maps.h>
 
 Cilent_AssetManager* Cilent_AssetManager_Create()
 {
     Cilent_AssetManager* assetManager = malloc(sizeof(Cilent_AssetManager));
     memset(assetManager, 0, sizeof(Cilent_AssetManager));
     
-    assetManager->fonts.map = ecs_map_new(int, NULL, 0);
     assetManager->fonts.size = sizeof(int);
     assetManager->fonts.type = "fonts";
     
-    assetManager->scripts.map = ecs_map_new(char*, NULL, 0);
     assetManager->scripts.size = sizeof(char*);
     assetManager->scripts.type = "scripts";
     
-    assetManager->shaders.map = ecs_map_new(Sprender_Shader, NULL, 0);
     assetManager->shaders.size = sizeof(Sprender_Shader);
     assetManager->shaders.type = "shaders";
     
-    assetManager->sounds.map = ecs_map_new(Cilent_Sound, NULL, 0);
     assetManager->sounds.size = sizeof(Cilent_Sound);
     assetManager->sounds.type = "sounds";
     
-    assetManager->textures.map = ecs_map_new(Sprender_Texture, NULL, 0);
     assetManager->textures.size = sizeof(Sprender_Texture);
     assetManager->textures.type = "textures";
     
@@ -42,7 +36,7 @@ void Cilent_AssetManager_Load(
     Cilent_AssetManager_Type* assets,
     ini_t* modData,
     const char* modName,
-    void (*callable)(const char*, const char*, void*, ecs_map_t*)
+    void (*callable)(const char*, const char*, void*)
 )
 {
     CILENT_ASSERT(assets != NULL);
@@ -68,6 +62,7 @@ void Cilent_AssetManager_Load(
         FILE* directoryExists = fopen(directory, "r");
         if (directoryExists == NULL)
         {
+            free(directory);
             // TODO: this should return something
             return;
         }
@@ -80,7 +75,7 @@ void Cilent_AssetManager_Load(
     
     assets->count = listLength;
     assets->list = malloc(sizeof(assets->size) * listLength);
-    ecs_map_set_size(assets->map, listLength);
+    assets->names = malloc(sizeof(char*) * listLength);
     
     // TODO: make this recursive to include assets within directories
     int result;
@@ -90,32 +85,40 @@ void Cilent_AssetManager_Load(
     {
         const char* filename = list[listLength]->d_name;
         
-        // FIXME: freeing & reallocating probably mega-sucks for performance
-        // This could be a realloc if I put the time into it, but I've spent
-        // too much of my life on this lol it needs to get operational before
-        // it gets optimized
         if (filepath != NULL)
         {
-            free(filepath);
+            filepath = realloc(
+                filepath,
+                sizeof(char) * (
+                    directoryLength
+                    + strlen(filename)
+                    + 1 // slash joining character
+                    + 1 // null terminator
+                )
+            );
         }
-        
-        filepath = malloc(
-            sizeof(char) * (
-                directoryLength
-                + strlen(filename)
-                + 1 // slash joining character
-                + 1 // null terminator
-            )
-        );
-        sprintf(filepath, "%s/%s", directory, filename);
+        else
+        {
+            filepath = malloc(
+                sizeof(char) * (
+                    directoryLength
+                    + strlen(filename)
+                    + 1 // slash joining character
+                    + 1 // null terminator
+                )
+            );
+        }
         
         if (
             strcmp(".", filename) == 0
             || strcmp("..", filename) == 0
         )
         {
+            free(list[listLength]);
             continue;
         }
+        
+        sprintf(filepath, "%s/%s", directory, filename);
         
         if (
             !ini_sget(
@@ -128,20 +131,33 @@ void Cilent_AssetManager_Load(
             || !result
         )
         {
+            free(list[listLength]);
             continue;
         }
         
         callable(
             filepath,
             filename,
-            &(assets->list[countSoFar * assets->size]),
-            assets->map
+            &(assets->list[countSoFar * assets->size])
         );
         
+        char* name = malloc(sizeof(char) * (strlen(filename) + 1));
+        strcpy(name, filename);
+        assets->names[countSoFar] = name;
+        debug_log("New name: `%s`", assets->names[countSoFar]);
+        
         countSoFar++;
+        
+        free(list[listLength]);
     }
     
     // TODO: resize array & map?
+    assets->count = countSoFar;
+    
+    if (filepath != NULL)
+    {
+        free(filepath);
+    }
     
     free(list);
     free(directory);
@@ -150,8 +166,7 @@ void Cilent_AssetManager_Load(
 void Cilent_AssetManager_Load_Font(
     const char* filename,
     const char* key,
-    void* ptr,
-    ecs_map_t* map
+    void* ptr
 )
 {
     int* font = (int*)ptr;
@@ -162,16 +177,13 @@ void Cilent_AssetManager_Load_Font(
         filename
     );
     
-    map_set(map, key, font);
-    
     debug_log("Loaded font `%s`", key);
 }
 
 void Cilent_AssetManager_Load_Script(
     const char* filename,
     const char* key,
-    void* ptr,
-    ecs_map_t* map
+    void* ptr
 )
 {
     char** script = (char**)ptr;
@@ -187,16 +199,13 @@ void Cilent_AssetManager_Load_Script(
         );
     }
     
-    map_set(map, key, script);
-    
     debug_log("Loaded script `%s`", key);
 }
 
 void Cilent_AssetManager_Load_Shader(
     const char* filename,
     const char* key,
-    void* ptr,
-    ecs_map_t* map
+    void* ptr
 )
 {
     Sprender_Shader* shader = (Sprender_Shader*)ptr;
@@ -207,16 +216,13 @@ void Cilent_AssetManager_Load_Shader(
         NULL
     );
     
-    map_set(map, key, shader);
-    
     debug_log("Loaded shader `%s`", key);
 }
 
 void Cilent_AssetManager_Load_Sound(
     const char* filename,
     const char* key,
-    void* ptr,
-    ecs_map_t* map
+    void* ptr
 )
 {
     Wav* wav = Wav_create();
@@ -225,16 +231,13 @@ void Cilent_AssetManager_Load_Sound(
     Cilent_Sound* sound = (Cilent_Sound*)ptr;
     sound->ptr = wav;
     
-    map_set(map, key, sound);
-    
     debug_log("Loaded sound `%s`", key);
 }
 
 void Cilent_AssetManager_Load_Texture(
     const char* filename,
     const char* key,
-    void* ptr,
-    ecs_map_t* map
+    void* ptr
 )
 {
     Sprender_Texture* texture = (Sprender_Texture*)ptr;
@@ -244,9 +247,25 @@ void Cilent_AssetManager_Load_Texture(
         filename
     );
     
-    map_set(map, key, texture);
-    
     debug_log("Loaded texture `%s`", key);
+}
+
+void* Cilent_AssetManagerType_FindByKey(
+    Cilent_AssetManager_Type* assetManagerType,
+    const char* key
+)
+{
+    CILENT_ASSERT(assetManagerType != NULL);
+    
+    for (int i = 0; i < assetManagerType->count; i++) {
+        if (strcmp(key, assetManagerType->names[i]) != 0) {
+            continue;
+        }
+        
+        return &assetManagerType->list[i];
+    }
+    
+    return NULL;
 }
 
 void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)
@@ -255,9 +274,53 @@ void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)
         return;
     }
     
-    // TODO: unload all of the assets
+    // Free fonts
+    for (int i = 0; i < assetManager->fonts.count; i++) {
+        // FontStash takes care of freeing the font files
+        free(assetManager->fonts.names[i]);
+    }
+    free(assetManager->fonts.names);
+    free(assetManager->fonts.list);
     
-    ecs_map_fini(assetManager->shaders.map);
-    ecs_map_fini(assetManager->textures.map);
+    // Free lua scripts
+    for (int i = 0; i < assetManager->scripts.count; i++) {
+        // Just a char*
+        free(assetManager->scripts.list[i]);
+        free(assetManager->scripts.names[i]);
+    }
+    free(assetManager->scripts.names);
+    free(assetManager->scripts.list);
+    
+    // Free shaders
+    for (int i = 0; i < assetManager->shaders.count; i++) {
+        Sprender_Shader_Destroy(
+            cilent->sprender->fna3d.device,
+            (Sprender_Shader*)(&assetManager->shaders.list[i])
+        );
+        free(assetManager->shaders.names[i]);
+    }
+    free(assetManager->shaders.names);
+    free(assetManager->shaders.list);
+    
+    // Free sounds
+    for (int i = 0; i < assetManager->sounds.count; i++) {
+        Wav_destroy(((Cilent_Sound*)&assetManager->sounds.list[i])->ptr);
+        free(assetManager->sounds.names[i]);
+    }
+    free(assetManager->sounds.names);
+    free(assetManager->sounds.list);
+    
+    // Free textures
+    for (int i = 0; i < assetManager->textures.count; i++) {
+        Sprender_Texture_Destroy(
+            cilent->sprender->fna3d.device,
+            (Sprender_Texture*)(&assetManager->textures.list[i])
+        );
+        free(assetManager->textures.names[i]);
+    }
+    free(assetManager->textures.names);
+    free(assetManager->textures.list);
+    
+    // Free the asset manager itself
     free(assetManager);
 }

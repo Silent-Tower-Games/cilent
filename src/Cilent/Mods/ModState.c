@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ModState.h"
-#include <Cilent/Flecs/Maps.h>
 #include <Cilent/Misc/Assert.h>
 #include <Cilent/Misc/File.h>
 #include <Cilent/Misc/Log.h>
@@ -17,14 +16,14 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
     Cilent_ModState modState;
     memset(&modState, 0, sizeof(Cilent_ModState));
     
-    modState.map = Cilent_Mod_FindAll(
+    Cilent_Mod_FindAll(
         &modState.games,
         &modState.gamesCount,
         &modState.addons,
         &modState.addonsCount
     );
     
-    modState.activeGame = map_get(modState.map, activeGame, Cilent_Mod);
+    modState.activeGame = Cilent_ModState_Mod_FindByKey(&modState, activeGame);
     
     if (modState.activeGame == NULL || !modState.activeGame->isGame) {
         debug_log_type(
@@ -33,7 +32,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
             activeGame
         );
         
-        modState.activeGame = map_get(modState.map, "base", Cilent_Mod);
+        modState.activeGame = Cilent_ModState_Mod_FindByKey(&modState, "base");
     }
     
     CILENT_ASSERT(modState.activeGame != NULL);
@@ -64,6 +63,32 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
     return modState;
 }
 
+Cilent_Mod* Cilent_ModState_Mod_FindByKey(Cilent_ModState* modState, const char* key)
+{
+    CILENT_ASSERT(modState != NULL);
+    
+    const size_t length = fmax(modState->addonsCount, modState->gamesCount);
+    for (int i = 0; i < length; i++)
+    {
+        // TODO: inefficient! O(n) string comparisons & code repeating
+        if (
+            i < modState->addonsCount
+            && strcmp(key, modState->addons[i].name) == 0
+        ) {
+            return &modState->addons[i];
+        }
+        
+        if (
+            i < modState->gamesCount
+            && strcmp(key, modState->games[i].name) == 0
+        ) {
+            return &modState->games[i];
+        }
+    }
+    
+    return NULL;
+}
+
 char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey, const char* language)
 {
     CILENT_ASSERT(modKey != NULL);
@@ -71,7 +96,7 @@ char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey,
     CILENT_ASSERT(strnlen(language, 5) <= 5);
     CILENT_ASSERT(modState->activeAddonsCount < modState->addonsCount);
     
-    Cilent_Mod* mod = map_get(modState->map, modKey, Cilent_Mod);
+    Cilent_Mod* mod = Cilent_ModState_Mod_FindByKey(modState, modKey);
     
     CILENT_ASSERT(mod != NULL);
     CILENT_ASSERT(!mod->active);
@@ -141,7 +166,7 @@ void Cilent_ModState_Mod_Deactivate(Cilent_ModState* modState, const char* modKe
     CILENT_ASSERT(modKey != NULL);
     CILENT_ASSERT(modState->activeAddonsCount > 0);
     
-    Cilent_Mod* mod = map_get(modState->map, modKey, Cilent_Mod);
+    Cilent_Mod* mod = Cilent_ModState_Mod_FindByKey(modState, modKey);
     
     CILENT_ASSERT(mod->active);
     CILENT_ASSERT(!mod->isGame);
@@ -192,7 +217,7 @@ const char* Cilent_ModState_Lang_Find(
         modKey = modState->activeGame->name;
     }
     
-    Cilent_Mod* modObj = map_get(modState->map, modKey, Cilent_Mod);
+    Cilent_Mod* modObj = Cilent_ModState_Mod_FindByKey(modState, modKey);
     if (
         modObj == NULL
         || modObj->lang == NULL
@@ -206,7 +231,6 @@ const char* Cilent_ModState_Lang_Find(
 
 void Cilent_ModState_Destroy(Cilent_ModState modState)
 {
-    ecs_map_fini(modState.map);
     free(modState.activeAddons);
     
     for (int i = 0; i < fmax(modState.addonsCount, modState.gamesCount); i++) {
@@ -218,4 +242,7 @@ void Cilent_ModState_Destroy(Cilent_ModState modState)
             Cilent_Mod_Destroy(&modState.addons[i]);
         }
     }
+    
+    free(modState.addons);
+    free(modState.games);
 }

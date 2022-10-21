@@ -45,20 +45,6 @@ Cilent* Cilent_Create(
         0,
         0
     );
-    // FIXME: having to set vsync immediately after creating sprender :(
-    // This is because:
-    // - sprender creates FNA3D device
-    // - Cilent_Config_Create loads all mods
-    // - mods load assets
-    // - assets need FNA3D device
-    // - sprender needs config to know if vsync is on
-    // This is easier at the moment than uprooting the application flow lol
-    Sprender_SetPresentation(
-        cilent->sprender,
-        windowSize,
-        0,
-        cilent->config.vsync
-    );
     
     // FontStash
     memset(&cilent->fontStashSprender, 0, sizeof(FontStashSprender));
@@ -84,6 +70,21 @@ Cilent* Cilent_Create(
     
     // Config
     cilent->config = Cilent_Config_Create(config);
+    
+    // FIXME: having to set vsync immediately after creating sprender :(
+    // This is because:
+    // - sprender creates FNA3D device
+    // - Cilent_Config_Create loads all mods
+    // - mods load assets
+    // - assets need FNA3D device
+    // - sprender needs config to know if vsync is on
+    // This is easier at the moment than uprooting the application flow lol
+    Sprender_SetPresentation(
+        cilent->sprender,
+        windowSize,
+        0,
+        cilent->config.vsync
+    );
     
     // FPSLoop
     cilent->loop = FPSLoop_Create(
@@ -145,6 +146,8 @@ void Cilent_Destroy(Cilent* cilent)
     Cilent_Config_Destroy(&cilent->config);
     
     Sprender_Destroy(cilent->sprender);
+    
+    FPSLoop_Destroy(cilent->loop);
     
     free(cilent);
 }

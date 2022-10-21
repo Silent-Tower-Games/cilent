@@ -4,7 +4,6 @@
 #include <Cilent/global.h>
 #include <Cilent/Assets/Sound.h>
 #include <Cilent/Config/Config.h>
-#include <Cilent/Flecs/Maps.h>
 #include <Cilent/Lang/Lang.h>
 #include <Cilent/Misc/Assert.h>
 #include <Cilent/Misc/Log.h>
@@ -82,40 +81,28 @@ int main(int argc, char** argv)
         SPRENDER_SPRITEBATCH_INDEXBUFFER_PREBUILD // use an index buffer
     );
     cilent->fontStashSprender.spriteBatch = spriteBatch;
-    mod = map_get(
-        cilent->config.modState.map,
-        "floor-is-lava",
-        Cilent_Mod
-    );
-    mod2 = map_get(
-        cilent->config.modState.map,
-        "higher-jump",
-        Cilent_Mod
-    );
+    mod = Cilent_ModState_Mod_FindByKey(&cilent->config.modState, "floor-is-lava");
+    mod2 = Cilent_ModState_Mod_FindByKey(&cilent->config.modState, "higher-jump");
     noise = Noise_create();
     Noise_setType(noise, NOISE_BROWNISH);
     sfxr = Sfxr_create();
     speech = Speech_create();
     Speech_setText(speech, "Hello World");
-    shader = mod == NULL || mod->assetManager == NULL ? NULL : map_get(
-        mod->assetManager->shaders.map,
-        "RedShader.fxb",
-        Sprender_Shader
+    shader = mod == NULL || mod->assetManager == NULL ? NULL : Cilent_AssetManagerType_FindByKey(
+        &mod->assetManager->shaders,
+        "RedShader.fxb"
     );
-    sound = map_get(
-        cilent->config.modState.activeGame->assetManager->sounds.map,
-        "fifth-demo.ogg",
-        Cilent_Sound
+    sound = Cilent_AssetManagerType_FindByKey(
+        &cilent->config.modState.activeGame->assetManager->sounds,
+        "fifth-demo.ogg"
     );
-    sound2 = map_get(
-        mod2->assetManager->sounds.map,
-        "healthpickup1.ogg",
-        Cilent_Sound
+    sound2 = Cilent_AssetManagerType_FindByKey(
+        &mod2->assetManager->sounds,
+        "healthpickup1.ogg"
     );
-    texture = map_get(
-        cilent->config.modState.activeGame->assetManager->textures.map,
-        "easter-16x16.png",
-        Sprender_Texture
+    texture = Cilent_AssetManagerType_FindByKey(
+        &cilent->config.modState.activeGame->assetManager->textures,
+        "easter-16x16.png"
     );
     texture->tilesize.X = 16;
     texture->tilesize.Y = 16;
