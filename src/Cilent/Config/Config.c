@@ -60,14 +60,16 @@ static char* Cilent_Config_GetFilename(Cilent_Config* config)
 {
     if (Cilent_Config_Filename[0] == '\0')
     {
+        char* prefPath = SDL_GetPrefPath(
+            config->org,
+            config->app
+        );
         sprintf(
             Cilent_Config_Filename,
             "%sconfig.ini",
-            SDL_GetPrefPath(
-                config->org,
-                config->app
-            )
+            prefPath
         );
+        SDL_free(prefPath);
     }
     
     return Cilent_Config_Filename;

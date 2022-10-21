@@ -242,4 +242,7 @@ void Cilent_ModState_Destroy(Cilent_ModState modState)
             Cilent_Mod_Destroy(&modState.addons[i]);
         }
     }
+    
+    free(modState.addons);
+    free(modState.games);
 }

@@ -53,6 +53,7 @@ void Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod*
             || strcmp(list[listLength]->d_name, "..") == 0
             || strcmp(list[listLength]->d_name, "engine") == 0
         ) {
+            free(list[listLength]);
             continue;
         }
         
@@ -64,6 +65,7 @@ void Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod*
                 directory,
                 list[listLength]->d_name
             );
+            free(list[listLength]);
             continue;
         }
         
@@ -84,6 +86,8 @@ void Cilent_Mod_FindAll(Cilent_Mod** pModsGame, int* pModsGameCount, Cilent_Mod*
             
             *pMod = mod;
         }
+        
+        free(list[listLength]);
     }
     free(path);
     free(list);

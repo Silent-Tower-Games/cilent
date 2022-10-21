@@ -114,6 +114,7 @@ void Cilent_AssetManager_Load(
             || strcmp("..", filename) == 0
         )
         {
+            free(list[listLength]);
             continue;
         }
         
@@ -130,6 +131,7 @@ void Cilent_AssetManager_Load(
             || !result
         )
         {
+            free(list[listLength]);
             continue;
         }
         
@@ -145,6 +147,8 @@ void Cilent_AssetManager_Load(
         debug_log("New name: `%s`", assets->names[countSoFar]);
         
         countSoFar++;
+        
+        free(list[listLength]);
     }
     
     // TODO: resize array & map?
