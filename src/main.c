@@ -81,8 +81,8 @@ int main(int argc, char** argv)
         SPRENDER_SPRITEBATCH_INDEXBUFFER_PREBUILD // use an index buffer
     );
     cilent->fontStashSprender.spriteBatch = spriteBatch;
-    mod = Cilent_ModState_FindModByKey(&cilent->config.modState, "floor-is-lava");
-    mod2 = Cilent_ModState_FindModByKey(&cilent->config.modState, "higher-jump");
+    mod = Cilent_ModState_Mod_FindByKey(&cilent->config.modState, "floor-is-lava");
+    mod2 = Cilent_ModState_Mod_FindByKey(&cilent->config.modState, "higher-jump");
     noise = Noise_create();
     Noise_setType(noise, NOISE_BROWNISH);
     sfxr = Sfxr_create();

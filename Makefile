@@ -38,7 +38,6 @@ lib:
 clean:
 	find . -type f -name '*.o' -delete
 
-# TODO: this doesn't work anymore
 .PHONY=valgrind
 valgrind:
 	time (cd ./bin/linux-gcc-64/Debug/ && valgrind --leak-check=full --track-origins=yes ./main 2> valgrind.txt)

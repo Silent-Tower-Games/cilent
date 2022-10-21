@@ -23,7 +23,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
         &modState.addonsCount
     );
     
-    modState.activeGame = Cilent_ModState_FindModByKey(&modState, activeGame);
+    modState.activeGame = Cilent_ModState_Mod_FindByKey(&modState, activeGame);
     
     if (modState.activeGame == NULL || !modState.activeGame->isGame) {
         debug_log_type(
@@ -32,7 +32,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
             activeGame
         );
         
-        modState.activeGame = Cilent_ModState_FindModByKey(&modState, "base");
+        modState.activeGame = Cilent_ModState_Mod_FindByKey(&modState, "base");
     }
     
     CILENT_ASSERT(modState.activeGame != NULL);
@@ -63,7 +63,7 @@ Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const c
     return modState;
 }
 
-Cilent_Mod* Cilent_ModState_FindModByKey(Cilent_ModState* modState, const char* key)
+Cilent_Mod* Cilent_ModState_Mod_FindByKey(Cilent_ModState* modState, const char* key)
 {
     CILENT_ASSERT(modState != NULL);
     
@@ -96,7 +96,7 @@ char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey,
     CILENT_ASSERT(strnlen(language, 5) <= 5);
     CILENT_ASSERT(modState->activeAddonsCount < modState->addonsCount);
     
-    Cilent_Mod* mod = Cilent_ModState_FindModByKey(modState, modKey);
+    Cilent_Mod* mod = Cilent_ModState_Mod_FindByKey(modState, modKey);
     
     CILENT_ASSERT(mod != NULL);
     CILENT_ASSERT(!mod->active);
@@ -166,7 +166,7 @@ void Cilent_ModState_Mod_Deactivate(Cilent_ModState* modState, const char* modKe
     CILENT_ASSERT(modKey != NULL);
     CILENT_ASSERT(modState->activeAddonsCount > 0);
     
-    Cilent_Mod* mod = Cilent_ModState_FindModByKey(modState, modKey);
+    Cilent_Mod* mod = Cilent_ModState_Mod_FindByKey(modState, modKey);
     
     CILENT_ASSERT(mod->active);
     CILENT_ASSERT(!mod->isGame);
@@ -217,7 +217,7 @@ const char* Cilent_ModState_Lang_Find(
         modKey = modState->activeGame->name;
     }
     
-    Cilent_Mod* modObj = Cilent_ModState_FindModByKey(modState, modKey);
+    Cilent_Mod* modObj = Cilent_ModState_Mod_FindByKey(modState, modKey);
     if (
         modObj == NULL
         || modObj->lang == NULL
