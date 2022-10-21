@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../vendor/ini-master/src/ini.h"
+#include <Cilent/vendor/ini-master/src/ini.h>
 
 typedef struct Cilent_Lang
 {

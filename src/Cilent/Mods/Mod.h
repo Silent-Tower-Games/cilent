@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../vendor/ini-master/src/ini.h"
 #include <flecs.h>
 #include <Cilent/Assets/AssetManager.h>
+#include <Cilent/vendor/ini-master/src/ini.h>
 #include <Cilent/Lang/Lang.h>
 
 typedef struct Cilent_Mod {

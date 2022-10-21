@@ -14,7 +14,7 @@
 #define STGINPUT_CONVENIENCE
 #include <STGInput/Convenience.h>
 #define FONTSTASH_IMPLEMENTATION
-#include <vendor/fontstash/fontstash.h>
+#include <Cilent/vendor/fontstash/fontstash.h>
 #include <Cilent/Fonts/FontStash.h>
 #include <flecs.h>
 #include <stdio.h>

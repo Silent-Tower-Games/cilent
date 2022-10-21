@@ -1,8 +1,8 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <Cilent/Misc/Assert.h>
+#include <Cilent/vendor/ini-master/src/ini.h>
 #include "Config.h"
-#include "../../vendor/ini-master/src/ini.h"
 
 #define CILENT_CONFIG_LOAD_STRING(header, name, max) { \
     const char* strTemp = ini_get( \

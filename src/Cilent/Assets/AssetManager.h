@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <flecs.h>
 #include <Sprender/Texture.h>
-#include <vendor/ini-master/src/ini.h>
+#include <Cilent/vendor/ini-master/src/ini.h>
 
 typedef struct Cilent_AssetManager_Type
 {

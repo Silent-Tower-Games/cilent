@@ -6,7 +6,7 @@
 #include <Cilent/Misc/Assert.h>
 #include <Cilent/Misc/File.h>
 #include <Cilent/Misc/Log.h>
-#include "../../vendor/ini-master/src/ini.h"
+#include <Cilent/vendor/ini-master/src/ini.h>
 
 Cilent_ModState Cilent_ModState_Load(char* activeGame, ini_t* configIni, const char* language)
 {
