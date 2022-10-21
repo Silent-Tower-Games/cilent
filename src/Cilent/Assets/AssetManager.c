@@ -148,7 +148,6 @@ void Cilent_AssetManager_Load(
         char* name = malloc(sizeof(char) * (strlen(filename) + 1));
         strcpy(name, filename);
         assets->names[countSoFar] = name;
-        debug_log("New name: `%s`", assets->names[countSoFar]);
         
         countSoFar++;
         
@@ -263,6 +262,8 @@ void Cilent_AssetManager_Load_Tiled(
     cute_tiled_map_t** tiled = (cute_tiled_map_t**)ptr;
     
     *tiled = cute_tiled_load_map_from_file(filename, 0);
+    
+    debug_log("Tile width: %d", (*tiled)->tilewidth);
     
     debug_log("Loaded tiled map `%s`", key);
 }

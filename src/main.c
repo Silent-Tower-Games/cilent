@@ -29,7 +29,7 @@ Cilent_Sound* sound;
 Cilent_Sound* sound2;
 Sprender_SpriteBatch* spriteBatch;
 Sprender_Texture* texture;
-Sprender_Float2D position = { .X = 0, .Y = 0 };
+cute_tiled_map_t* map;
 
 Speech* speech;
 Sfxr* sfxr;
@@ -108,6 +108,11 @@ int main(int argc, char** argv)
     );
     texture->tilesize.X = 16;
     texture->tilesize.Y = 16;
+    map = *((cute_tiled_map_t**)Cilent_AssetManagerType_FindByKey(
+        &cilent->config.modState.activeGame->assetManager->tiled,
+        "test.json"
+    ));
+    debug_log("%dx%d", map->tilewidth, map->tileheight);
     
     Cilent_Loop(cilent);
     
@@ -320,11 +325,12 @@ void DrawSystem(const ecs_iter_t* it)
         shader,
         shader == NULL || !shaderEnabled ? 0 : 1
     );
+    
+    // Draw LittleGuys
     Sprender_SpriteBatch_Begin(
         spriteBatch,
         texture
     );
-    
     for (int i = 0; i < it->count; i++) {
         Sprender_SpriteBatch_StageFrame(
             spriteBatch,
@@ -336,10 +342,18 @@ void DrawSystem(const ecs_iter_t* it)
             0xFFFFFFFF
         );
     }
-    
     Sprender_SpriteBatch_End(spriteBatch);
     Sprender_RenderSprites(cilent->sprender, spriteBatch);
     
+    // Draw tilemap
+    cute_tiled_layer_t* layer = map->layers;
+    while (layer) {
+        printf("%s\n", layer->name.ptr);
+        
+        layer = layer->next;
+    }
+    
+    // Draw text
     fonsSetFont(cilent->fons, cilent->defaultFont);
     fonsSetSize(cilent->fons, 8.0f);
     fonsSetColor(cilent->fons, 0xFFFF00FF);
