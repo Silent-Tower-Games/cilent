@@ -155,6 +155,12 @@ char Cilent_ModState_Mod_Activate(Cilent_ModState* modState, const char* modKey,
         mod->name,
         Cilent_AssetManager_Load_Texture
     );
+    Cilent_AssetManager_Load(
+        &mod->assetManager->tiled,
+        mod->ini,
+        mod->name,
+        Cilent_AssetManager_Load_Tiled
+    );
     
     debug_log("Mod is active: `%s`", mod->name);
     

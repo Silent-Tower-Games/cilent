@@ -21,6 +21,7 @@ typedef struct Cilent_AssetManager
     Cilent_AssetManager_Type shaders;
     Cilent_AssetManager_Type sounds;
     Cilent_AssetManager_Type textures;
+    Cilent_AssetManager_Type tiled;
 } Cilent_AssetManager;
 
 Cilent_AssetManager* Cilent_AssetManager_Create();
@@ -57,6 +58,12 @@ void Cilent_AssetManager_Load_Sound(
 );
 
 void Cilent_AssetManager_Load_Texture(
+    const char* filename,
+    const char* key,
+    void* ptr
+);
+
+void Cilent_AssetManager_Load_Tiled(
     const char* filename,
     const char* key,
     void* ptr

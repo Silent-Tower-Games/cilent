@@ -4,6 +4,7 @@
 #include <Cilent/global.h>
 #include <Cilent/Assets/Sound.h>
 #include <Cilent/Config/Config.h>
+#include <Cilent/Fonts/FontStash.h>
 #include <Cilent/Lang/Lang.h>
 #include <Cilent/Misc/Assert.h>
 #include <Cilent/Misc/Log.h>
@@ -15,7 +16,8 @@
 #include <STGInput/Convenience.h>
 #define FONTSTASH_IMPLEMENTATION
 #include <Cilent/vendor/fontstash/fontstash.h>
-#include <Cilent/Fonts/FontStash.h>
+#define CUTE_TILED_IMPLEMENTATION
+#include <Cilent/vendor/cute_headers/cute_tiled.h>
 #include <flecs.h>
 #include <stdio.h>
 

@@ -8,6 +8,7 @@
 #include <Cilent/Assets/Sound.h>
 #include <Cilent/Misc/Assert.h>
 #include <Cilent/Misc/File.h>
+#include <Cilent/vendor/cute_headers/cute_tiled.h>
 
 Cilent_AssetManager* Cilent_AssetManager_Create()
 {
@@ -28,6 +29,9 @@ Cilent_AssetManager* Cilent_AssetManager_Create()
     
     assetManager->textures.size = sizeof(Sprender_Texture);
     assetManager->textures.type = "textures";
+    
+    assetManager->tiled.size = sizeof(cute_tiled_map_t*);
+    assetManager->tiled.type = "tiled";
     
     return assetManager;
 }
@@ -250,6 +254,19 @@ void Cilent_AssetManager_Load_Texture(
     debug_log("Loaded texture `%s`", key);
 }
 
+void Cilent_AssetManager_Load_Tiled(
+    const char* filename,
+    const char* key,
+    void* ptr
+)
+{
+    cute_tiled_map_t** tiled = (cute_tiled_map_t**)ptr;
+    
+    *tiled = cute_tiled_load_map_from_file(filename, 0);
+    
+    debug_log("Loaded tiled map `%s`", key);
+}
+
 void* Cilent_AssetManagerType_FindByKey(
     Cilent_AssetManager_Type* assetManagerType,
     const char* key
@@ -320,6 +337,14 @@ void Cilent_AssetManager_Destroy(Cilent_AssetManager* assetManager)
     }
     free(assetManager->textures.names);
     free(assetManager->textures.list);
+    
+    // Free tiled maps
+    for (int i = 0; i < assetManager->tiled.count; i++) {
+        cute_tiled_free_map(assetManager->tiled.list[i]);
+        free(assetManager->tiled.names[i]);
+    }
+    free(assetManager->tiled.names);
+    free(assetManager->tiled.list);
     
     // Free the asset manager itself
     free(assetManager);
